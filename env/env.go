@@ -23,7 +23,7 @@ var (
  * Setup immutable environment variables
  */
 func init() {
-  if v = os.Getenv("ENVIRON"); v != "" {
+  if v := os.Getenv("ENVIRON"); v != "" {
     environ = v
   }else{
     environ = "devel"
@@ -67,7 +67,7 @@ func Hostname() string {
  * Determine our local address
  */
 func LocalAddr() string {
-  addr, err = awsLocalIPv4()
+  addr, err := awsLocalIPv4()
   if err != nil {
     alt.Warnf("env: Could not fetch instance local IPv4 from environment: %v", err)
     addr = defaultIP // punt
@@ -79,7 +79,7 @@ func LocalAddr() string {
  * Determine our public address
  */
 func PublicAddr() string {
-  addr, err = awsPublicIPv4()
+  addr, err := awsPublicIPv4()
   if err != nil {
     alt.Warnf("env: Could not fetch instance public IPv4 from environment: %v", err)
     addr = defaultIP // punt

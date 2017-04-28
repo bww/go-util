@@ -6,10 +6,6 @@ import (
   "io/ioutil"
 )
 
-import (
-  "github.com/bww/go-alert"
-)
-
 /**
  * Shared client
  */
