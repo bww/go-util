@@ -38,13 +38,21 @@ func Environ() string {
 }
 
 /**
+ * Are we in a development environment (as opposed to running on AWS)?
+ */
+func devel() bool {
+  e := Environ()
+  return e == "" || e == "devel"
+}
+
+/**
  * Determine our hostname
  */
 func Hostname() string {
   var name string
   var err error
   
-  if e := Environ(); e != "" && e != "devel" {
+  if !devel() {
     name, err = awsLocalHostname()
     if err != nil {
       alt.Warnf("env: Could not fetch instance hostname from environment: %v", err)
@@ -67,6 +75,9 @@ func Hostname() string {
  * Determine our local address
  */
 func LocalAddr() string {
+  if devel() {
+    return defaultIP
+  }
   addr, err := awsLocalIPv4()
   if err != nil {
     alt.Warnf("env: Could not fetch instance local IPv4 from environment: %v", err)
@@ -79,6 +90,9 @@ func LocalAddr() string {
  * Determine our public address
  */
 func PublicAddr() string {
+  if devel() {
+    return defaultIP
+  }
   addr, err := awsPublicIPv4()
   if err != nil {
     alt.Warnf("env: Could not fetch instance public IPv4 from environment: %v", err)
