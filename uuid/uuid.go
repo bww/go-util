@@ -15,8 +15,11 @@ import (
   "time"
   "errors"
   "strings"
-  "util/rand"
   "sync/atomic"
+)
+
+import (
+  "github.com/bww/go-util/rand"
 )
 
 /**
@@ -49,7 +52,7 @@ const (
  */
 func init() {
   var clockSeqRand [2]byte
-  util.ReadRandom(clockSeqRand[:])
+  rand.ReadRandom(clockSeqRand[:])
   clockSeq = uint32(clockSeqRand[1])<<8 | uint32(clockSeqRand[0])
 }
 
@@ -98,7 +101,7 @@ func UUIDFromBytes(input []byte) (UUID, error) {
  */
 func RandomUUID() UUID {
   var u UUID
-  util.ReadRandom(u[:])
+  rand.ReadRandom(u[:])
   u[6] &= 0x0F // clear version
   u[6] |= 0x40 // set version to 4 (random uuid)
   u[8] &= 0x3F // clear variant
@@ -136,7 +139,7 @@ func UUIDBaseFromTime(aTime time.Time) UUID {
   u[8] = byte(0)
   u[9] = byte(0)
   
-  copy(u[10:], macaddr)
+  copy(u[10:], rand.HardwareAddr())
   
   u[6] |= 0x10 // set version to 1 (time based uuid)
   u[8] &= 0x3F // clear variant
@@ -163,7 +166,7 @@ func UUIDFromTime(aTime time.Time) UUID {
   u[8] = byte(clock >> 8)
   u[9] = byte(clock)
   
-  copy(u[10:], macaddr)
+  copy(u[10:], rand.HardwareAddr())
   
   u[6] |= 0x10 // set version to 1 (time based uuid)
   u[8] &= 0x3F // clear variant
