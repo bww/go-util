@@ -16,6 +16,7 @@ import (
   "errors"
   "strings"
   "sync/atomic"
+  "database/sql/driver"
 )
 
 import (
@@ -30,7 +31,7 @@ type UUID [16]byte
 /**
  * Zero UUID
  */
-var ZeroUUID UUID = [16]byte{}
+var Zero UUID = [16]byte{}
 
 /**
  * Clock sequence
@@ -57,9 +58,16 @@ func init() {
 }
 
 /*
- * ParseUUID parses a 32 digit hexadecimal number (that might contain hypens) represanting an UUID.
+ * A new Random UUID.
  */
-func ParseUUID(input string) (UUID, error) {
+func New() UUID {
+  return Random()
+}
+
+/*
+ * Parse parses a 32 digit hexadecimal number (that might contain hypens) represanting an UUID.
+ */
+func Parse(input string) (UUID, error) {
   var u UUID
   j := 0
   for _, r := range input {
@@ -84,9 +92,9 @@ func ParseUUID(input string) (UUID, error) {
 }
 
 /*
- * UUIDFromBytes converts a raw byte slice to an UUID.
+ * FromBytes converts a raw byte slice to an UUID.
  */
-func UUIDFromBytes(input []byte) (UUID, error) {
+func FromBytes(input []byte) (UUID, error) {
   var u UUID
   if len(input) != 16 {
     return u, errors.New("UUIDs must be exactly 16 bytes long")
@@ -99,7 +107,7 @@ func UUIDFromBytes(input []byte) (UUID, error) {
 /*
  * RandomUUID generates a totally random UUID (version 4) as described in RFC 4122.
  */
-func RandomUUID() UUID {
+func Random() UUID {
   var u UUID
   rand.ReadRandom(u[:])
   u[6] &= 0x0F // clear version
@@ -117,8 +125,8 @@ var timeBase = time.Date(1582, time.October, 15, 0, 0, 0, 0, time.UTC).Unix()
 /*
  * TimeUUID generates a new time based UUID (version 1) using the current time as the timestamp.
  */
-func TimeUUID() UUID {
-  return UUIDFromTime(time.Now())
+func Time() UUID {
+  return FromTime(time.Now())
 }
 
 /* 
@@ -127,7 +135,7 @@ func TimeUUID() UUID {
  * is zeroed. This allows for the construction of a time UUID that represents
  * the lower bound of any other UUID that could be generated for the same time.
  */
-func UUIDBaseFromTime(aTime time.Time) UUID {
+func BaseFromTime(aTime time.Time) UUID {
   var u UUID
   
   utcTime := aTime.In(time.UTC)
@@ -153,7 +161,7 @@ func UUIDBaseFromTime(aTime time.Time) UUID {
  * RFC 4122. This UUID contains the MAC address of the node that generated
  * the UUID, the given timestamp and a sequence number.
  */
-func UUIDFromTime(aTime time.Time) UUID {
+func FromTime(aTime time.Time) UUID {
   var u UUID
   
   utcTime := aTime.In(time.UTC)
@@ -266,7 +274,7 @@ func (u UUID) Time() time.Time {
  * Marshal
  */
 func (u UUID) MarshalJSON() ([]byte, error) {
-  if u == ZeroUUID {
+  if u == Zero {
     return []byte("null"), nil
   }else{
     return []byte(`"`+ u.String() +`"`), nil
@@ -280,7 +288,7 @@ func (u *UUID) UnmarshalJSON(data []byte) error {
   
   raw := string(data)
   if raw == "null" || raw == "0" {
-    copy(u[:], ZeroUUID[:])
+    copy(u[:], Zero[:])
     return nil
   }
   
@@ -289,10 +297,33 @@ func (u *UUID) UnmarshalJSON(data []byte) error {
     return fmt.Errorf("Invalid JSON UUID: %s", str)
   }
   
-  res, err := ParseUUID(str)
+  res, err := Parse(str)
   if err == nil {
     copy(u[:], res[:])
   }
   
+  return err
+}
+
+/**
+ * Value
+ */
+func (v UUID) Value() (driver.Value, error) {
+  return v.String(), nil
+}
+
+/**
+ * Scan
+ */
+func (v *UUID) Scan(src interface{}) error {
+  var err error
+  switch c := src.(type) {
+    case []byte:
+      *v, err = Parse(string(c))
+    case string:
+      *v, err = Parse(c)
+    default:
+      err = fmt.Errorf("Unsupported type: %T", src)
+  }
   return err
 }
