@@ -17,6 +17,7 @@ const (
  * Immutable variables
  */
 var (
+  prefix  string
   environ string
   home    string
 )
@@ -25,12 +26,19 @@ var (
  * Setup immutable environment variables
  */
 func init() {
-  if v := os.Getenv("ENVIRON"); v != "" {
+  if v := os.Getenv("GOUTIL_PREFIX"); v != "" {
+    prefix = v
+  }
+  if v := os.Getenv("GOUTIL_ENVIRON"); v != "" {
+    environ = v
+  }else if v = os.Getenv(prefix +"ENVIRON"); v != "" {
     environ = v
   }else{
     environ = "devel"
   }
-  if v := os.Getenv("PRODUCT"); v != "" {
+  if v := os.Getenv("GOUTIL_HOME"); v != "" {
+    home = v
+  }else if v = os.Getenv(prefix +"HOME"); prefix != "" && v != "" {
     home = v
   }else if h, err := os.Executable(); err == nil {
     home = path.Dir(path.Dir(h))
