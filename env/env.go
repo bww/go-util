@@ -2,6 +2,7 @@ package env
 
 import (
   "os"
+  "path"
 )
 
 import (
@@ -17,6 +18,7 @@ const (
  */
 var (
   environ string
+  home    string
 )
 
 /**
@@ -28,6 +30,13 @@ func init() {
   }else{
     environ = "devel"
   }
+  if v := os.Getenv("PRODUCT"); v != "" {
+    home = v
+  }else if h, err := os.Executable(); err == nil {
+    home = path.Dir(path.Dir(h))
+  }else{
+    home = "."
+  }
 }
 
 /**
@@ -35,6 +44,41 @@ func init() {
  */
 func Environ() string {
   return environ
+}
+
+/**
+ * Determine the product home directory
+ */
+func Home() string {
+  return home
+}
+
+/**
+ * Resource path under product
+ */
+func Resource(p ...string) string {
+  return path.Join(append([]string{home}, p...)...)
+}
+
+/**
+ * Path under product bin
+ */
+func Bin(p ...string) string {
+  return path.Join(append([]string{home, "bin"}, p...)...)
+}
+
+/**
+ * Path under product etc
+ */
+func Etc(p ...string) string {
+  return path.Join(append([]string{home, "etc"}, p...)...)
+}
+
+/**
+ * Path under product web
+ */
+func Web(p ...string) string {
+  return path.Join(append([]string{home, "web"}, p...)...)
 }
 
 /**
