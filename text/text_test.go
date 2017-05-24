@@ -60,3 +60,14 @@ func TestCollapseSpaces(t *testing.T) {
   assert.Equal(t, "A B C", CollapseSpaces(" A B C "))
   assert.Equal(t, "A$B$C", CollapseSpaces(" A$B$C "))
 }
+
+/**
+ * Test normalize join
+ */
+func TestNormalizeJoin(t *testing.T) {
+  assert.Equal(t, "", NormalizeJoin([]string{}, "a", "b"))
+  assert.Equal(t, "1", NormalizeJoin([]string{"1"}, ", ", " and "))
+  assert.Equal(t, "1 and 2", NormalizeJoin([]string{"1", "2"}, ", ", " and "))
+  assert.Equal(t, "1, 2 and 3", NormalizeJoin([]string{"1", "2", "3"}, ", ", " and "))
+  assert.Equal(t, "1, 2, 3 and 4", NormalizeJoin([]string{"1", "2", "3", "4"}, ", ", " and "))
+}

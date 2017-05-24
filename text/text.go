@@ -86,3 +86,22 @@ func CollapseSpaces(s string) string {
   return n
 }
 
+/**
+ * Normalize a list, using a special final delimiter between the last
+ * two elements.
+ */
+func NormalizeJoin(l []string, d, f string) string {
+  n := len(l)
+  var s string
+  for i, e := range l {
+    if i > 0 {
+      if n - (i + 1) == 0 {
+        s += f
+      }else{
+        s += d
+      }
+    }
+    s += e
+  }
+  return s
+}
