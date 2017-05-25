@@ -1,5 +1,6 @@
 
-TEST_PKGS = ./text \
+TEST_PKGS = ./env \
+						./text \
 						./rand \
 						./qname \
 						./uuid \
