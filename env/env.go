@@ -72,21 +72,39 @@ func Resource(p ...string) string {
  * Path under product bin
  */
 func Bin(p ...string) string {
-  return path.Join(append([]string{home, "bin"}, p...)...)
+  if v := os.Getenv("GOUTIL_BIN"); v != "" {
+    return v
+  }else if v = os.Getenv(prefix +"BIN"); v != "" {
+    return v
+  }else{
+    return path.Join(append([]string{home, "bin"}, p...)...)
+  }
 }
 
 /**
  * Path under product etc
  */
 func Etc(p ...string) string {
-  return path.Join(append([]string{home, "etc"}, p...)...)
+  if v := os.Getenv("GOUTIL_ETC"); v != "" {
+    return v
+  }else if v = os.Getenv(prefix +"ETC"); v != "" {
+    return v
+  }else{
+    return path.Join(append([]string{home, "etc"}, p...)...)
+  }
 }
 
 /**
  * Path under product web
  */
 func Web(p ...string) string {
-  return path.Join(append([]string{home, "web"}, p...)...)
+  if v := os.Getenv("GOUTIL_WEB"); v != "" {
+    return v
+  }else if v = os.Getenv(prefix +"WEB"); v != "" {
+    return v
+  }else{
+    return path.Join(append([]string{home, "web"}, p...)...)
+  }
 }
 
 /**
