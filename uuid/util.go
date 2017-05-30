@@ -8,5 +8,5 @@ var uuidPattern = regexp.MustCompile("[a-fA-f0-9]{8}-([a-fA-f0-9]{4}-){3}[a-fA-f
 
 // Determine if an input string resembles a UUID
 func ResemblesUUID(s string) bool {
-  return uuidPattern.MatchString(s)
+  return len(s) == 36 && uuidPattern.MatchString(s)
 }
