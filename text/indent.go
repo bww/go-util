@@ -41,13 +41,14 @@ func NewIndentWriter(p string, opt IndentOptions, w io.Writer) io.Writer {
 }
 
 // Write
-func (w indentWriter) Write(s []byte) (int, error) {
+func (w *indentWriter) Write(s []byte) (int, error) {
   opt := w.opt
   if w.first {
-    w.first = false
-  }else{
     opt |= IndentOptionIndentFirstLine
+  }else{
+    opt = opt &^ IndentOptionIndentFirstLine
   }
+  w.first = false
   return indent(string(s), w.prefix, opt, w.dst)
 }
 
