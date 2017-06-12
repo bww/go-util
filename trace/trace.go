@@ -16,15 +16,16 @@ var groupByName aggregate
 
 func init() {
   switch strings.ToLower(os.Getenv("GOUTIL_TRACE_GROUP_SPANS_BY")) {
+    case "none":        // nothing
     case "avg", "mean": groupByName = mean
-    case "max": groupByName = max
-    case "sum": groupByName = sum
+    case "max":         groupByName = max
+    case "sum":         groupByName = sum
+    default:            groupByName = sum
   }
   switch strings.ToLower(os.Getenv("GOUTIL_TRACE_DURATION_UNITS")) {
     case  "s":        displayUnit = time.Second
     case "ms":        displayUnit = time.Millisecond
     case "us", "μs":  displayUnit = time.Microsecond
-    case "ns":        displayUnit = time.Nanosecond
     default:          displayUnit = time.Nanosecond
   }
 }
@@ -117,7 +118,7 @@ func (t *Trace) Write(w io.Writer) (int, error) {
       s += fmt.Sprintf("  #"+ nf +" "+ df +" ", i + 1, ds[i])
       s += e.Name
       if e.Aggregate > 1 {
-        s += fmt.Sprintf(" (%d)", e.Aggregate)
+        s += fmt.Sprintf(" (⨉%d)", e.Aggregate)
       }
       s += "\n"
     }
