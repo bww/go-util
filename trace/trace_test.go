@@ -14,6 +14,8 @@ func TestTrace(t *testing.T) {
   r := New("Hello")
   r.Start("Sub-operation").Finish()
   r.Start("Another operation").Finish()
+  r.Start("Another operation").Finish()
+  r.Start("Another operation").Finish()
   r.Start("Open operation")
   s := r.Start("Enjoy this one as well")
   <- time.After(time.Second * 1)
