@@ -11,7 +11,7 @@ import (
  * Test trace
  */
 func TestTrace(t *testing.T) {
-  r := NewTrace("Hello")
+  r := New("Hello")
   r.Start("Sub-operation").Finish()
   r.Start("Another operation").Finish()
   r.Start("Open operation")

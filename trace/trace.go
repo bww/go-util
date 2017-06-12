@@ -26,7 +26,7 @@ type Trace struct {
 }
 
 // Create a trace
-func NewTrace(n string) *Trace {
+func New(n string) *Trace {
   return &Trace{Name:n}
 }
 
