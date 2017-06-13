@@ -13,8 +13,12 @@ type aggregate func([]time.Duration)(time.Duration)
 
 var displayUnit time.Duration
 var groupByName aggregate
+var colorize    bool
 
 func init() {
+  if os.Getenv("GOUTIL_TRACE_COLORIZE_OUTPUT") != "" && os.Getenv("TERM") != "" {
+    colorize = true
+  }
   switch strings.ToLower(os.Getenv("GOUTIL_TRACE_GROUP_SPANS_BY")) {
     case "none":        // nothing
     case "avg", "mean": groupByName = mean
@@ -47,11 +51,18 @@ func (s *Span) Finish() {
 type Trace struct {
   Name  string
   Spans []*Span
+  warn  time.Duration
 }
 
 // Create a trace
 func New(n string) *Trace {
   return &Trace{Name:n}
+}
+
+// Set the warning threshold
+func (t *Trace) Warn(d time.Duration) *Trace {
+  t.warn = d
+  return t
 }
 
 // Begin a new span
@@ -115,12 +126,22 @@ func (t *Trace) Write(w io.Writer) (int, error) {
     
     df := fmt.Sprintf("%%%ds", dm)
     for i, e := range spans {
+      warn := t.warn > 0 && e.Duration > t.warn
+      if colorize && warn {
+        s += string([]byte("\x1b[031m"))
+      }
       s += fmt.Sprintf("  #"+ nf +" "+ df +" ", i + 1, ds[i])
       s += e.Name
       if e.Aggregate > 1 {
         s += fmt.Sprintf(" (⨉%d)", e.Aggregate)
       }
+      if warn {
+        s += fmt.Sprintf(" (%v over threshold)", e.Duration - t.warn)
+      }
       s += "\n"
+      if colorize && warn {
+        s += string([]byte("\x1b[000m"))
+      }
     }
   }
   
@@ -200,4 +221,3 @@ func sum(d []time.Duration) time.Duration {
   }
   return s
 }
-

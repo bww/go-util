@@ -11,7 +11,7 @@ import (
  * Test trace
  */
 func TestTrace(t *testing.T) {
-  r := New("Hello")
+  r := New("Hello").Warn(time.Millisecond * 10)
   r.Start("Sub-operation").Finish()
   r.Start("Another operation").Finish()
   r.Start("Another operation").Finish()
