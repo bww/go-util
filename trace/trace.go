@@ -40,6 +40,14 @@ type Span struct {
   Started   time.Time
   Duration  time.Duration
   Aggregate int
+  Spans     []*Span
+}
+
+// Begin a sub-span
+func (s *Span) Start(n string) *Span {
+  c := &Span{n, time.Now(), 0, 0, nil}
+  s.Spans = append(s.Spans, c)
+  return c
 }
 
 // Finish a span
@@ -67,16 +75,21 @@ func (t *Trace) Warn(d time.Duration) *Trace {
 
 // Begin a new span
 func (t *Trace) Start(n string) *Span {
-  s := &Span{n, time.Now(), 0, 0}
+  s := &Span{n, time.Now(), 0, 0, nil}
   t.Spans = append(t.Spans, s)
   return s
 }
 
 // Write a trace to the specified writer
 func (t *Trace) Write(w io.Writer) (int, error) {
+  return fmt.Fprint(w, t.format(true, t.Name, t.Spans, "  "))
+}
+
+// Write a trace to the specified writer
+func (t *Trace) format(root bool, name string, spans []*Span, indent string) string {
+  var s string
   
   // group by name, use the position of the first occurrance
-  spans := t.Spans
   if groupByName != nil {
     spans = group(groupByName, spans)
   }
@@ -98,11 +111,12 @@ func (t *Trace) Write(w io.Writer) (int, error) {
     }
   }
   
-  var s string
-  if td := lt.Sub(et); td > 0 {
-    s = fmt.Sprintf("%v (%v in %d spans; longest: #%d @ %s)\n", t.Name, td, len(spans), si + 1, formatDuration(sd))
-  }else{
-    s = fmt.Sprintf("%v (no closed spans)\n", t.Name)
+  if root {
+    if td := lt.Sub(et); td > 0 {
+      s = fmt.Sprintf("%v (%v in %d spans; longest: #%d @ %s)\n", name, td, len(spans), si + 1, formatDuration(sd))
+    }else{
+      s = fmt.Sprintf("%v (no closed spans)\n", name)
+    }
   }
   
   if l := len(spans); l > 0 {
@@ -130,7 +144,7 @@ func (t *Trace) Write(w io.Writer) (int, error) {
       if colorize && warn {
         s += string([]byte("\x1b[031m"))
       }
-      s += fmt.Sprintf("  #"+ nf +" "+ df +" ", i + 1, ds[i])
+      s += fmt.Sprintf(indent +"#"+ nf +" "+ df +" ", i + 1, ds[i])
       s += e.Name
       if e.Aggregate > 1 {
         s += fmt.Sprintf(" (⨉%d)", e.Aggregate)
@@ -142,10 +156,13 @@ func (t *Trace) Write(w io.Writer) (int, error) {
       if colorize && warn {
         s += string([]byte("\x1b[000m"))
       }
+      if len(e.Spans) > 0 {
+        s += t.format(false, e.Name, e.Spans, indent + "    ")
+      }
     }
   }
   
-  return fmt.Fprint(w, s)
+  return s
 }
 
 // Group spans using the specified aggregate function
@@ -156,9 +173,11 @@ func group(a aggregate, s []*Span) []*Span {
   for i := 0; i < len(base); i++ {
     b := base[i]
     m := []time.Duration{b.Duration}
+    u := []*Span{}
     for j := i + 1; j < len(base); {
       if c := base[j]; c.Name == b.Name {
         m = append(m, c.Duration)
+        u = append(u, c.Spans...)
         for k := j + 1; k < len(base); k++ { base[k-1] = base[k] }
         base = base[:len(base)-1]
       }else{
@@ -166,7 +185,7 @@ func group(a aggregate, s []*Span) []*Span {
       }
     }
     if len(m) > 1 {
-      base[i] = &Span{Name:b.Name, Started:b.Started, Duration:a(m), Aggregate:len(m)}
+      base[i] = &Span{Name:b.Name, Started:b.Started, Duration:a(m), Aggregate:len(m), Spans:u}
     }
   }
   
