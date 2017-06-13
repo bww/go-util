@@ -89,7 +89,7 @@ func (t *Trace) Write(w io.Writer) (int, error) {
   
   var s string
   if td := lt.Sub(et); td > 0 {
-    s = fmt.Sprintf("%v (%v in %d spans; longest: %d @ %s)\n", t.Name, td, len(spans), si + 1, formatDuration(sd))
+    s = fmt.Sprintf("%v (%v in %d spans; longest: #%d @ %s)\n", t.Name, td, len(spans), si + 1, formatDuration(sd))
   }else{
     s = fmt.Sprintf("%v (no closed spans)\n", t.Name)
   }
