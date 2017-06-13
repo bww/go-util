@@ -7,10 +7,25 @@ import (
   // "github.com/stretchr/testify/assert"
 )
 
+import (
+  "github.com/bww/go-util/debug"
+)
+
+/**
+ * Test no-op trace handling, when debug.TRACE is false
+ */
+func TestNopTrace(t *testing.T) {
+  r := New("Hello").Warn(time.Millisecond)
+  r.Start("Sub-operation").Finish()
+  r.Start("Another operation").Finish()
+  r.Write(os.Stdout)
+}
+
 /**
  * Test trace
  */
 func TestTrace(t *testing.T) {
+  debug.TRACE = true
   r := New("Hello").Warn(time.Millisecond)
   r.Start("Sub-operation").Finish()
   r.Start("Another operation").Finish()

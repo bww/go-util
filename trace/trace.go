@@ -9,6 +9,10 @@ import (
   "strings"
 )
 
+import (
+  "github.com/bww/go-util/debug"
+)
+
 type aggregate func([]time.Duration)(time.Duration)
 
 var displayUnit time.Duration
@@ -45,14 +49,19 @@ type Span struct {
 
 // Begin a sub-span
 func (s *Span) Start(n string) *Span {
-  c := &Span{n, time.Now(), 0, 0, nil}
-  s.Spans = append(s.Spans, c)
+  var c *Span
+  if s != nil {
+    c = &Span{n, time.Now(), 0, 0, nil}
+    s.Spans = append(s.Spans, c)
+  }
   return c
 }
 
 // Finish a span
 func (s *Span) Finish() {
-  s.Duration = time.Since(s.Started)
+  if s != nil {
+    s.Duration = time.Since(s.Started)
+  }
 }
 
 // A trace, which manages a set of related spans
@@ -64,25 +73,38 @@ type Trace struct {
 
 // Create a trace
 func New(n string) *Trace {
-  return &Trace{Name:n}
+  if debug.TRACE {
+    return &Trace{Name:n}
+  }else{
+    return nil
+  }
 }
 
 // Set the warning threshold
 func (t *Trace) Warn(d time.Duration) *Trace {
-  t.warn = d
+  if t != nil {
+    t.warn = d
+  }
   return t
 }
 
 // Begin a new span
 func (t *Trace) Start(n string) *Span {
-  s := &Span{n, time.Now(), 0, 0, nil}
-  t.Spans = append(t.Spans, s)
+  var s *Span
+  if t != nil {
+    s = &Span{n, time.Now(), 0, 0, nil}
+    t.Spans = append(t.Spans, s)
+  }
   return s
 }
 
 // Write a trace to the specified writer
 func (t *Trace) Write(w io.Writer) (int, error) {
-  return fmt.Fprint(w, t.format(true, t.Name, t.Spans, "  "))
+  if t != nil {
+    return fmt.Fprint(w, t.format(true, t.Name, t.Spans, "  "))
+  }else{
+    return 0, nil
+  }
 }
 
 // Write a trace to the specified writer
