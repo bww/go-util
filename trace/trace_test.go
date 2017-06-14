@@ -1,7 +1,6 @@
 package trace
 
 import (
-  "os"
   "time"
   "testing"
   // "github.com/stretchr/testify/assert"
@@ -18,7 +17,7 @@ func TestNopTrace(t *testing.T) {
   r := New("Hello").Warn(time.Millisecond)
   r.Start("Sub-operation").Finish()
   r.Start("Another operation").Finish()
-  r.Write(os.Stdout)
+  r.Finish()
 }
 
 /**
@@ -48,6 +47,6 @@ func TestTrace(t *testing.T) {
   u.Start("Sub-sub-op again!").Finish()
   u.Start("Sub-sub-op again!").Finish()
   s.Finish()
-  r.Write(os.Stdout)
+  r.Finish()
   // assert.Equal(t, true, ResemblesUUID("ACE24573-5BD5-4C5F-B143-5E9E17F18BDB"))
 }

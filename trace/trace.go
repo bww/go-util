@@ -98,17 +98,24 @@ func (t *Trace) Start(n string) *Span {
   return s
 }
 
+// Finish a trace
+func (t *Trace) Finish() {
+  if t != nil {
+    t.Write(os.Stdout)
+  }
+}
+
 // Write a trace to the specified writer
 func (t *Trace) Write(w io.Writer) (int, error) {
   if t != nil {
-    return fmt.Fprint(w, t.format(true, t.Name, t.Spans, "  "))
+    return fmt.Fprint(w, t.format(true, t.Name, t.Spans, 0, 0, "  "))
   }else{
     return 0, nil
   }
 }
 
 // Write a trace to the specified writer
-func (t *Trace) format(root bool, name string, spans []*Span, indent string) string {
+func (t *Trace) format(root bool, name string, spans []*Span, depth, rem int, indent string) string {
   var s string
   
   // group by name, use the position of the first occurrance
@@ -162,11 +169,27 @@ func (t *Trace) format(root bool, name string, spans []*Span, indent string) str
     
     df := fmt.Sprintf("%%%ds", dm)
     for i, e := range spans {
+      s += indent
+      if depth > 0 {
+        last := i + 1 == len(spans)
+        for j := 1; j < depth; j++ {
+          if last && rem < 1 {
+            s += "      "
+          }else{
+            s += " │    "
+          }
+        }
+        if last {
+          s += " └─── "
+        }else{
+          s += " ├─── "
+        }
+      }
       warn := t.warn > 0 && e.Duration > t.warn
       if colorize && warn {
         s += string([]byte("\x1b[031m"))
       }
-      s += fmt.Sprintf(indent +"#"+ nf +" "+ df +" ", i + 1, ds[i])
+      s += fmt.Sprintf("#"+ nf +" "+ df +" ", i + 1, ds[i])
       s += e.Name
       if e.Aggregate > 1 {
         s += fmt.Sprintf(" (⨉%d)", e.Aggregate)
@@ -178,8 +201,8 @@ func (t *Trace) format(root bool, name string, spans []*Span, indent string) str
       if colorize && warn {
         s += string([]byte("\x1b[000m"))
       }
-      if len(e.Spans) > 0 {
-        s += t.format(false, e.Name, e.Spans, indent + "    ")
+      if l := len(e.Spans); l > 0 {
+        s += t.format(false, e.Name, e.Spans, depth + 1, rem + (len(spans) - i - 1), indent + strings.Repeat(" ", nd - 1))
       }
     }
   }
