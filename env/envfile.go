@@ -13,12 +13,14 @@ func LoadEnvfile(f string) error {
   if err != nil {
     return err
   }
+  
   for k, v := range e {
     err = os.Setenv(k, v)
     if err != nil {
       return err
     }
   }
+  
   return nil
 }
 
