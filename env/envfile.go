@@ -24,7 +24,6 @@ func LoadEnvfile(f string) error {
 
 // Read the contents of an .env file
 func ReadEnvfile(f string) (map[string]string, error) {
-  
   r, err := os.Open(f)
   if err != nil {
     return nil, err
@@ -35,17 +34,24 @@ func ReadEnvfile(f string) (map[string]string, error) {
     return nil, err
   }
   
+  return parseEnv(string(d))
+}
+
+// Parse environment pairs defined as KEY=VAL
+func parseEnv(s string) (map[string]string, error) {
   e := make(map[string]string)
-  s := string(d)
-  
   p := 0
+  
   for i := 0; i <= len(s); i++ {
     if i == len(s) || s[i] == '\n' {
       k, v, err := envDecl(s[p:i])
       if err != nil {
         return nil, err
       }
-      e[k] = os.ExpandEnv(v)
+      if len(k) > 0 {
+        e[k] = os.ExpandEnv(v)
+      }
+      p = i + 1
     }
   }
   
@@ -78,6 +84,11 @@ func envDecl(s string) (string, string, error) {
           }
       }
     }
+  }
+  
+  s  = strings.TrimSpace(s)
+  if len(s) < 1 {
+    return "", "", nil // no content
   }
   
   x := strings.Index(s, "=")
