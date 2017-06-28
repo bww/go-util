@@ -21,9 +21,11 @@ func Load(from ...string) error {
       }
       
       for k, v := range e {
-        err = os.Setenv(k, v)
-        if err != nil {
-          return err
+        if os.Getenv(k) == "" {
+          err = os.Setenv(k, v)
+          if err != nil {
+            return err
+          }
         }
       }
     }
