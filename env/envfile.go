@@ -13,7 +13,11 @@ func Load(from ...string) error {
     if f != "" {
       e, err := Read(f)
       if err != nil {
-        return err
+        if os.IsNotExist(err) {
+          continue
+        }else{
+          return err
+        }
       }
       
       for k, v := range e {
