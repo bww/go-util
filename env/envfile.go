@@ -8,25 +8,28 @@ import (
 )
 
 // Load the contents of an .env file into the current environment
-func Load(f string) error {
-  e, err := Read(f)
-  if err != nil {
-    return err
-  }
-  
-  for k, v := range e {
-    err = os.Setenv(k, v)
-    if err != nil {
-      return err
+func Load(from ...string) error {
+  for _, f := range from {
+    if f != "" {
+      e, err := Read(f)
+      if err != nil {
+        return err
+      }
+      
+      for k, v := range e {
+        err = os.Setenv(k, v)
+        if err != nil {
+          return err
+        }
+      }
     }
   }
-  
   return nil
 }
 
 // Read the contents of an .env file
-func Read(f string) (map[string]string, error) {
-  r, err := os.Open(f)
+func Read(from string) (map[string]string, error) {
+  r, err := os.Open(from)
   if err != nil {
     return nil, err
   }
