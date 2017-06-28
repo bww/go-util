@@ -10,7 +10,7 @@ import (
 // Load the contents of an .env file into the current environment
 func Load(from ...string) error {
   
-  env := make[string]struct{}
+  env := make(map[string]struct{})
   for _, e := range os.Environ() {
     if x := strings.Index(e, "="); x > 0 {
       env[strings.TrimSpace(e[:x])] = struct{}{}
