@@ -4,6 +4,7 @@ import (
   "os"
   "fmt"
   "strings"
+  "io"
   "io/ioutil"
 )
 
@@ -47,12 +48,15 @@ func Read(from string) (map[string]string, error) {
   if err != nil {
     return nil, err
   }
-  
-  d, err := ioutil.ReadAll(r)
+  return read(r)
+}
+
+// Read the contents of an .env file
+func read(from io.Reader) (map[string]string, error) {
+  d, err := ioutil.ReadAll(from)
   if err != nil {
     return nil, err
   }
-  
   return parseEnv(string(d))
 }
 
