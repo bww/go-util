@@ -9,6 +9,14 @@ import (
 
 // Load the contents of an .env file into the current environment
 func Load(from ...string) error {
+  
+  env := make[string]struct{}
+  for _, e := range os.Environ() {
+    if x := strings.Index(e, "="); x > 0 {
+      env[strings.TrimSpace(e[:x])] = struct{}{}
+    }
+  }
+  
   for _, f := range from {
     if f != "" {
       e, err := Read(f)
@@ -19,9 +27,8 @@ func Load(from ...string) error {
           return err
         }
       }
-      
       for k, v := range e {
-        if os.Getenv(k) == "" {
+        if _, ok := env[k]; !ok {
           err = os.Setenv(k, v)
           if err != nil {
             return err
@@ -30,6 +37,7 @@ func Load(from ...string) error {
       }
     }
   }
+  
   return nil
 }
 
