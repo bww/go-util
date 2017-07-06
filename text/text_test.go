@@ -71,3 +71,14 @@ func TestNormalizeJoin(t *testing.T) {
   assert.Equal(t, "1, 2 and 3", NormalizeJoin([]string{"1", "2", "3"}, ", ", " and "))
   assert.Equal(t, "1, 2, 3 and 4", NormalizeJoin([]string{"1", "2", "3", "4"}, ", ", " and "))
 }
+
+/**
+ * Test coalesce
+ */
+func TestCoalesce(t *testing.T) {
+  assert.Equal(t, "", Coalesce())
+  assert.Equal(t, "", Coalesce(""))
+  assert.Equal(t, "", Coalesce("", ""))
+  assert.Equal(t, "a", Coalesce("", "a"))
+  assert.Equal(t, "a", Coalesce("a", "b"))
+}

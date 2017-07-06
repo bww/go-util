@@ -105,3 +105,15 @@ func NormalizeJoin(l []string, d, f string) string {
   }
   return s
 }
+
+/**
+ * Return the first non-empty string from those provided
+ */
+func Coalesce(v... string) string {
+  for _, e := range v {
+    if e != "" {
+      return e
+    }
+  }
+  return ""
+}
