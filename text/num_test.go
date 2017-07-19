@@ -12,6 +12,7 @@ func assertRanges(t *testing.T, s string, r [][]int, e error) {
   if e != nil {
     assert.Equal(t, e, err)
   }else if assert.Nil(t, err, fmt.Errorf("%v", err)) {
+    fmt.Println("-----> ", s, v)
     assert.Equal(t, r, v)
   }
 }
