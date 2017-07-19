@@ -10,6 +10,9 @@ import (
 // Errors
 var ErrEmptyInput = fmt.Errorf("Empty input")
 
+// Number parser function
+type NumberParser func(string)(int, error)
+
 // Range sorting
 type byLowerBound [][]int
 func (a byLowerBound) Len() int           { return len(a) }
@@ -32,6 +35,16 @@ func (a byLowerBound) Less(i, j int) bool { return a[i][0] < a[j][0] }
 // And the input: 0-5,7,9-10 produces: [[0,5],[7,1],[9,2]]
 // 
 func ParseRanges(s string, b []int) ([][]int, error) {
+  return parseRanges(s, b, "-", strconv.Atoi)
+}
+
+// Parse ranges where the values are parsed by a function
+func ParseRangeFunc(s string, b []int, d string, c NumberParser) ([][]int, error) {
+  return parseRanges(s, b, d, c)
+}
+
+// Parse ranges
+func parseRanges(s string, b []int, d string, c NumberParser) ([][]int, error) {
   if len(b) != 2 {
     return nil, fmt.Errorf("Invalid constraining bounds; length: %v", len(b))
   }
@@ -49,22 +62,22 @@ func ParseRanges(s string, b []int) ([][]int, error) {
       return nil, fmt.Errorf("Invalid empty range")
     }
     
-    if strings.Index(e, "-") < 0 {
+    if strings.Index(e, d) < 0 {
       if l, err = strconv.Atoi(e); err != nil {
         return nil, fmt.Errorf("Invalid lower bound: %v", err)
       }
       u = l + 1
     }else{
-      n := strings.SplitN(e, "-", 2)
+      n := strings.SplitN(e, d, 2)
       n[0], n[1] = strings.TrimSpace(n[0]), strings.TrimSpace(n[1])
       if n[0] == "" {
         l = b[0]
-      }else if l, err = strconv.Atoi(n[0]); err != nil {
+      }else if l, err = c(n[0]); err != nil {
         return nil, fmt.Errorf("Invalid lower bound: %v", err)
       }
       if n[1] == "" {
         u = b[1]
-      }else if u, err = strconv.Atoi(n[1]); err != nil {
+      }else if u, err = c(n[1]); err != nil {
         return nil, fmt.Errorf("Invalid upper bound: %v", err)
       }
     }
