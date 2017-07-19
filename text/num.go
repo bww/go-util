@@ -39,7 +39,7 @@ func ParseRanges(s string, b []int) ([][]int, error) {
 }
 
 // Parse ranges where the values are parsed by a function
-func ParseRangeFunc(s string, b []int, d string, c NumberParser) ([][]int, error) {
+func ParseRangesFunc(s string, b []int, d string, c NumberParser) ([][]int, error) {
   return parseRanges(s, b, d, c)
 }
 
