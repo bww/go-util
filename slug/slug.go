@@ -61,10 +61,14 @@ func slugify(s, w string) string {
   s = convertCurrenciesToWords(s)
   s = convertSymbolsToWords(s)
   
-  sp := 0
+  sp, ws := 0, 0
   for _, e := range s {
     if unicode.IsSpace(e) {
       sp++
+      continue
+    }
+    if string(e) == w { // allow a single literal word separator
+      ws++
       continue
     }
     if unicode.IsLetter(e) || unicode.IsNumber(e) {
@@ -74,6 +78,12 @@ func slugify(s, w string) string {
           g += w
         }
         sp = 0 // clear space
+      }else if ws > 0 {
+        // add the word separator if we're not at the beginning or the end
+        if len(g) > 0 {
+          g += w
+        }
+        ws = 0 // clear word separator
       }
       g += string(unicode.ToLower(e))
     }

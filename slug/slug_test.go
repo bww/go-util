@@ -15,6 +15,13 @@ func TestSlugs(t *testing.T) {
   assert.Equal(t, `this-and-that`, Slugify(`This &amp; That`))
   assert.Equal(t, `the-mayor-said-no-way`, Slugify(`The Mayor Said «No Way!»`))
   assert.Equal(t, `pay-back-the-100-dollars-25-cents-you-owe`, Slugify(`Pay back the $100.25 you owe!`))
+  assert.Equal(t, ``, Slugify(`          `))
+  assert.Equal(t, ``, Slugify(` `))
+  assert.Equal(t, ``, Slugify(``))
+  assert.Equal(t, `this-already-has-hyphens`, Slugify(`THIS-already-HAS-hyphens`))
+  assert.Equal(t, `this-already-has-too-many-hyphens`, Slugify(`this---already---has---too---many---hyphens`))
+  assert.Equal(t, ``, Slugify(`----------`))
+  assert.Equal(t, ``, Slugify(`-`))
 }
 
 /**
