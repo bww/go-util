@@ -22,6 +22,11 @@ func TestSlugs(t *testing.T) {
   assert.Equal(t, `this-already-has-too-many-hyphens`, Slugify(`this---already---has---too---many---hyphens`))
   assert.Equal(t, ``, Slugify(`----------`))
   assert.Equal(t, ``, Slugify(`-`))
+  assert.Equal(t, ``, Slugify(` - `))
+  assert.Equal(t, ``, Slugify(` - - - `))
+  assert.Equal(t, `a`, Slugify(` a `))
+  assert.Equal(t, `a-b`, Slugify(` a-b `))
+  assert.Equal(t, `a-b`, Slugify(` a---b `))
 }
 
 /**
