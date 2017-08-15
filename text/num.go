@@ -63,7 +63,7 @@ func parseRanges(s string, b []int, d string, c NumberParser) ([][]int, error) {
     }
     
     if strings.Index(e, d) < 0 {
-      if l, err = strconv.Atoi(e); err != nil {
+      if l, err = c(e); err != nil {
         return nil, fmt.Errorf("Invalid lower bound: %v", err)
       }
       u = l + 1
