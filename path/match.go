@@ -7,7 +7,6 @@
 package path
 
 import (
-  "fmt"
   "errors"
   "strings"
   "unicode/utf8"
@@ -40,14 +39,12 @@ var ErrBadPattern = errors.New("Invalid pattern")
 // is malformed.
 //
 func Match(pattern, name string) (matched bool, err error) {
-  orig := pattern
 Pattern:
   for len(pattern) > 0 {
     var star int
     var chunk string
     star, chunk, pattern = scanChunk(pattern)
     if star > 0 {
-      fmt.Printf(">>> >>> >>> %d [%s] [%s] [%s]\n", star, chunk, orig, name)
       if star > 1 {
         if chunk == "" {
           // The chunk ** matches the rest of the string if it's at the end
