@@ -16,6 +16,8 @@ type matchTest struct {
 
 var matchTests = []matchTest{
   {"**", "", true, nil},
+  {"**", "*", true, nil},
+  {"**", "**", true, nil},
   {"**", "a", true, nil},
   {"**", "a/b", true, nil},
   {"a/**", "a/b", true, nil},
@@ -23,6 +25,7 @@ var matchTests = []matchTest{
   {"a/b/**", "a/b/c/d", true, nil},
   {"**/b", "a/b", false, ErrBadPattern},
   {"**/b/c", "a/b/c", false, ErrBadPattern},
+  {"**/", "a/b/c", false, ErrBadPattern},
   {"abc", "abc", true, nil},
   {"*", "abc", true, nil},
   {"*c", "abc", true, nil},
