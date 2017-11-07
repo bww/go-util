@@ -62,6 +62,18 @@ func TestCollapseSpaces(t *testing.T) {
 }
 
 /**
+ * Test truncate
+ */
+func TestTruncate(t *testing.T) {
+  assert.Equal(t, "", Truncate("", 10, ""))
+  assert.Equal(t, "Hello", Truncate("Hello", 10, "..."))
+  assert.Equal(t, "Hello dude", Truncate("Hello dude, how are you?", 10, ""))
+  assert.Equal(t, "Hello dude...", Truncate("Hello dude, how are you?", 10, "..."))
+  assert.Equal(t, "Hello 日本, ", Truncate("Hello 日本, how are you?", 10, ""))
+  assert.Equal(t, "Hello 日本, ...", Truncate("Hello 日本, how are you?", 10, "..."))
+}
+
+/**
  * Test normalize join
  */
 func TestNormalizeJoin(t *testing.T) {

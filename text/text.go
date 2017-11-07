@@ -2,6 +2,7 @@ package text
 
 import (
   "unicode"
+  "unicode/utf8"
 )
 
 /**
@@ -84,6 +85,25 @@ func CollapseSpaces(s string) string {
   }
   
   return n
+}
+
+// Truncate a string to n characters (not bytes). If the string is truncated,
+// the provided suffix is appended. Something like ' [...]' would be appropriate
+// as a suffix to indicate that text was removed.
+func Truncate(s string, n int, x string) string {
+  d := s
+  l, b, c := len(s), 0, 0
+  for i := 0; i < l && i < n; i++ {
+    _, w := utf8.DecodeRuneInString(d)
+    c += 1
+    b += w
+    d = d[w:]
+  }
+  s = s[:b]
+  if b < l {
+    s += x
+  }
+  return s
 }
 
 /**
