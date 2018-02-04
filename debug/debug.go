@@ -18,19 +18,11 @@ var (
   TRACE bool
 )
 
-var (
-  previous time.Time
-)
+var previous time.Time
 
-const (
-  threshold = time.Second * 3
-)
+const threshold = time.Second * 3
 
 var sourceRoots []string
-
-/**
- * Init
- */
 func init() {
   sourceRoots = make([]string, 0)
   for _, e := range strings.Split(os.Getenv("GOPATH"), ":") {
@@ -39,11 +31,12 @@ func init() {
       sourceRoots = append(sourceRoots, e)
     }
   }
+  // init defaults from the environment
+  DEBUG   = istrue(os.Getenv("DEBUG"), os.Getenv("GOUTIL_DEBUG"))
+  VERBOSE = istrue(os.Getenv("VERBOSE"), os.Getenv("GOUTIL_VERBOSE"))
+  TRACE   = istrue(os.Getenv("TRACE"), os.Getenv("GOUTIL_TRACE"))
 }
 
-/**
- * Strip off the GOPATH part of a source path
- */
 func relativeSourcePath(p string) string {
   for _, e := range sourceRoots {
     if strings.HasPrefix(p, e) {
@@ -57,9 +50,6 @@ func relativeSourcePath(p string) string {
   return p
 }
 
-/**
- * Obtain the current function context
- */
 func CurrentContext() string {
   pc := make([]uintptr, 2)
   runtime.Callers(2, pc)
@@ -68,9 +58,6 @@ func CurrentContext() string {
   return fmt.Sprintf("%s:%d %s", relativeSourcePath(file), line, f.Name())
 }
 
-/**
- * Dump goroutines on exit
- */
 func DumpRoutinesOnInterrupt() {
   sig := make(chan os.Signal, 1)
   signal.Notify(sig, os.Interrupt)
@@ -93,4 +80,13 @@ func DumpRoutinesOnInterrupt() {
       }
     }
   }()
+}
+
+func istrue(v ...string) bool {
+  for _, e := range v {
+    if strings.EqualFold("true", e) || strings.EqualFold("t", e) || strings.EqualFold("yes", e) || strings.EqualFold("y", e) {
+      return true
+    }
+  }
+  return false
 }
