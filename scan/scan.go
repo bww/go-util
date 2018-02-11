@@ -39,6 +39,7 @@ func Ident(p string) (string, string, error) {
 
 // Scan a parameter string
 func String(p string, q, x rune) (string, string, error) {
+  var closed bool
   var s string
   var err error
   
@@ -54,6 +55,7 @@ outer:
     p = p[w:]
     switch c {
       case q:
+        closed = true
         break outer
       case x:
         var r rune
@@ -67,6 +69,9 @@ outer:
     }
   }
   
+  if !closed {
+    return "", p, ErrInvalidSequence
+  }
   return s, p, nil
 }
 
