@@ -100,7 +100,7 @@ func unescape(p string, q, x rune) (rune, string, error) {
 }
 
 // Escape escapable chars in a string
-func escape(s string, q, x rune) string {
+func Escape(s string, q, x rune) string {
   var o string
   for _, e := range s {
     switch e {
