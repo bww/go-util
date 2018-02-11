@@ -12,6 +12,8 @@ const quote, esc = '\'', '\\'
 func TestScanIdent(t *testing.T) {
   assertScanIdent(t, `A, ok`, `A`, `, ok`, nil)
   assertScanIdent(t, `Hello123, ok`, `Hello123`, `, ok`, nil)
+  assertScanIdent(t, `_Hello123, ok`, `_Hello123`, `, ok`, nil)
+  assertScanIdent(t, `Hello_123, ok`, `Hello_123`, `, ok`, nil)
   assertScanIdent(t, `9Hello123, ok`, ``, ``, ErrInvalidSequence)
 }
 

@@ -15,11 +15,11 @@ var (
   ErrInvalidEscape    = fmt.Errorf("Unsupported escape sequence")
 )
 
-// Scan an identifier. Identifiers have the form: <letter>(<letter>|<digit>)*
+// Scan an identifier. Identifiers have the form: (<letter>|'_')(<letter>|'_'|<digit>)*
 func Ident(p string) (string, string, error) {
   var x int
   
-  if c, w := utf8.DecodeRuneInString(p); !unicode.IsLetter(c) {
+  if c, w := utf8.DecodeRuneInString(p); !unicode.IsLetter(c) && c != '_' {
     return "", p, ErrInvalidSequence
   }else{
     x += w
@@ -28,7 +28,7 @@ func Ident(p string) (string, string, error) {
   l := len(p)
   for x < l {
     c, w := utf8.DecodeRuneInString(p[x:])
-    if !unicode.IsLetter(c) && !unicode.IsDigit(c) {
+    if !unicode.IsLetter(c) && !unicode.IsDigit(c) && c != '_' {
       break
     }
     x += w
