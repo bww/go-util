@@ -11,7 +11,8 @@ import (
 )
 
 var (
-  ErrInvalidSequence = fmt.Errorf("Invalid sequence")
+  ErrInvalidSequence  = fmt.Errorf("Invalid sequence")
+  ErrInvalidEscape    = fmt.Errorf("Unsupported escape sequence")
 )
 
 // Scan an identifier. Identifiers have the form: <letter>(<letter>|<digit>)*
@@ -89,7 +90,7 @@ func unescape(p string, q, x rune) (rune, string, error) {
     case x, q:
       return c, p[w:], nil
     default:
-      return 0, p, fmt.Errorf("Unsupported escape sequence: \\%v in '%v'", string(c), p)
+      return 0, p, ErrInvalidEscape
   }
 }
 

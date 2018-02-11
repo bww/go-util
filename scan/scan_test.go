@@ -27,6 +27,7 @@ func TestScanString(t *testing.T) {
   assertScanString(t, `'Hello. \a\f\n\r\t\v' remainder`, "Hello. \a\f\n\r\t\v", ` remainder`, nil)
   assertScanString(t, `'Hello, \'quoted\'' remainder`, `Hello, 'quoted'`, ` remainder`, nil)
   assertScanString(t, `'Hello, \\a\\f\\n\\r\\t\\v\\' remainder`, `Hello, \a\f\n\r\t\v\`, ` remainder`, nil)
+  assertScanString(t, `'A \q' remainder`, ``, ``, ErrInvalidEscape) // invalid quote sequence
 }
 
 // Check a string
