@@ -14,7 +14,29 @@ var (
   ErrInvalidSequence = fmt.Errorf("Invalid sequence")
 )
 
-// Parse a parameter string
+// Scan an identifier. Identifiers have the form: <letter>(<letter>|<digit>)*
+func Ident(p string) (string, string, error) {
+  var x int
+  
+  if c, w := utf8.DecodeRuneInString(p); !unicode.IsLetter(c) {
+    return "", p, ErrInvalidSequence
+  }else{
+    x += w
+  }
+  
+  l := len(p)
+  for x < l {
+    c, w := utf8.DecodeRuneInString(p[x:])
+    if !unicode.IsLetter(c) && !unicode.IsDigit(c) {
+      break
+    }
+    x += w
+  }
+  
+  return p[:x], p[x:], nil
+}
+
+// Scan a parameter string
 func String(p string, q, x rune) (string, string, error) {
   var s string
   var err error
@@ -91,7 +113,7 @@ func escape(s string, q, x rune) string {
 }
 
 // Skip past leading whitespace
-func skipWhite(s string) string {
+func White(s string) (string, string) {
   var i int
   var e rune
   for i, e = range s {
@@ -99,5 +121,5 @@ func skipWhite(s string) string {
       break
     }
   }
-  return s[i:]
+  return s[:i], s[i:]
 }

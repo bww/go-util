@@ -8,6 +8,19 @@ import (
 
 const quote, esc = '\'', '\\'
 
+// Test ident scanning
+func TestScanIdent(t *testing.T) {
+  assertScanIdent(t, `A, ok`, `A`, `, ok`, nil)
+  assertScanIdent(t, `Hello123, ok`, `Hello123`, `, ok`, nil)
+  assertScanIdent(t, `9Hello123, ok`, ``, ``, ErrInvalidSequence)
+}
+
+// Check an ident
+func assertScanIdent(t *testing.T, in, ev, er string, eerr error) bool {
+  av, ar, aerr := Ident(in)
+  return assertScanFunc(t, in, ev, av, er, ar, eerr, aerr)
+}
+
 // Test string scanning
 func TestScanString(t *testing.T) {
   assertScanString(t, `'Hello.' remainder`, `Hello.`, ` remainder`, nil)
@@ -19,6 +32,11 @@ func TestScanString(t *testing.T) {
 // Check a string
 func assertScanString(t *testing.T, in, ev, er string, eerr error) bool {
   av, ar, aerr := String(in, quote, esc)
+  return assertScanFunc(t, in, ev, av, er, ar, eerr, aerr)
+}
+
+// Check
+func assertScanFunc(t *testing.T, in, ev, av, er, ar string, eerr, aerr error) bool {
   if aerr != nil || eerr != nil {
     fmt.Printf("%v -> %v\n", in, aerr)
     return assert.Equal(t, eerr, aerr, "Errors do not match")
@@ -29,3 +47,4 @@ func assertScanString(t *testing.T, in, ev, er string, eerr error) bool {
   res = res && assert.Equal(t, er, ar, "Remainders do not match")
   return res
 }
+
