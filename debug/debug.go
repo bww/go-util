@@ -50,6 +50,30 @@ func relativeSourcePath(p string) string {
   return p
 }
 
+type Frame struct {
+  File    string
+  Path    string
+  Line    int
+  Name    string
+  Func    *runtime.Func
+}
+
+func (f Frame) String() string {
+  return fmt.Sprintf("%s:%d %s", f.File, f.Line, f.Name)
+}
+
+func Stacktrace() []Frame {
+  pc := make([]uintptr, 64)
+  n  := runtime.Callers(2, pc)
+  t  := make([]Frame, n)
+  for i := 0; i < n; i++ {
+    f := runtime.FuncForPC(pc[i])
+    file, line := f.FileLine(pc[i])
+    t[i] = Frame{relativeSourcePath(file), file, line, f.Name(), f}
+  }
+  return t
+}
+
 func CurrentContext() string {
   pc := make([]uintptr, 2)
   runtime.Callers(2, pc)

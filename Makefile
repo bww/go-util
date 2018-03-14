@@ -1,5 +1,6 @@
 
 TEST_PKGS = github.com/bww/go-util/env \
+						github.com/bww/go-util/debug \
 						github.com/bww/go-util/text \
 						github.com/bww/go-util/rand \
 						github.com/bww/go-util/qname \
