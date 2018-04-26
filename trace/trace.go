@@ -9,10 +9,6 @@ import (
   "strings"
 )
 
-import (
-  "github.com/bww/go-util/debug"
-)
-
 type aggregate func([]time.Duration)(time.Duration)
 
 var displayUnit time.Duration
@@ -73,11 +69,7 @@ type Trace struct {
 
 // Create a trace
 func New(n string) *Trace {
-  if debug.TRACE {
-    return &Trace{Name:n}
-  }else{
-    return nil
-  }
+  return &Trace{Name:n}
 }
 
 // Set the warning threshold
