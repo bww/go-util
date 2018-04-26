@@ -82,6 +82,12 @@ func CurrentContext() string {
   return fmt.Sprintf("%s:%d %s", relativeSourcePath(file), line, f.Name())
 }
 
+func DumpRoutines() {
+  data := make([]byte, 1 << 20)
+  n := runtime.Stack(data, true)
+  io.Copy(os.Stderr, bytes.NewReader(data[:n]))
+}
+
 func DumpRoutinesOnInterrupt() {
   sig := make(chan os.Signal, 1)
   signal.Notify(sig, os.Interrupt)
@@ -94,9 +100,7 @@ func DumpRoutinesOnInterrupt() {
       }
       
       log.Printf("\nReceived a signal, dumping stack...\n")
-      data := make([]byte, 5 << 20)
-      n := runtime.Stack(data, true)
-      io.Copy(os.Stderr, bytes.NewReader(data[:n]))
+      DumpRoutines()
       
       previous = time.Now()
       if e == os.Kill {
