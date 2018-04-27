@@ -73,11 +73,7 @@ type Trace struct {
 
 // Create a trace
 func New(n string) *Trace {
-  if debug.TRACE {
-    return &Trace{Name:n}
-  }else{
-    return nil
-  }
+  return &Trace{Name:n}
 }
 
 // Set the warning threshold
