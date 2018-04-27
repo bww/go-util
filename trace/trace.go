@@ -9,10 +9,6 @@ import (
   "strings"
 )
 
-import (
-  "github.com/bww/go-util/debug"
-)
-
 type aggregate func([]time.Duration)(time.Duration)
 
 var displayUnit time.Duration
