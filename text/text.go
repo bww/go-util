@@ -6,6 +6,11 @@ import (
   "unicode/utf8"
 )
 
+import (
+  "golang.org/x/text/transform"
+  "golang.org/x/text/unicode/norm"
+)
+
 // Normalize a string for general purpose matching
 func NormalizeString(s string) string {
   return normalize(s, "-_',")
@@ -143,4 +148,33 @@ func Coalesce(v... string) string {
     }
   }
   return ""
+}
+
+
+// Strip out control characters in place
+func StripControl(s string) string {
+  c := make([]byte, len([]byte(s)))
+  n := 0
+  for _, e := range s {
+    if !unicode.IsControl(e) {
+      b := []byte(string(e))
+      copy(c[n:], b)
+      n += len(b)
+    }
+  }
+  return string(c[:n])
+}
+
+// Non-space marks
+func isMn(r rune) bool {
+  return unicode.Is(unicode.Mn, r) // Mn: nonspacing marks
+}
+
+// Convert characters with diacritical marks to their unaccented/base
+// counterparts. See also:
+// http://stackoverflow.com/questions/26722450/remove-diacritics-using-go
+func NormalizeDiacritics(s string) string {
+  t := transform.Chain(norm.NFD, transform.RemoveFunc(isMn), norm.NFC)
+  result, _, _ := transform.String(t, s)
+  return result
 }

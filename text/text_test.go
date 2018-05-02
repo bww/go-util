@@ -5,9 +5,6 @@ import (
   "github.com/stretchr/testify/assert"
 )
 
-/**
- * Test normalize string
- */
 func TestNormalizeString(t *testing.T) {
   assert.Equal(t, "", NormalizeString(" "))
   assert.Equal(t, "", NormalizeString("  "))
@@ -28,9 +25,6 @@ func TestNormalizeString(t *testing.T) {
   abc`))
 }
 
-/**
- * Test normalize terms
- */
 func TestNormalizeTerms(t *testing.T) {
   assert.Equal(t, "", NormalizeTerms(" "))
   assert.Equal(t, "", NormalizeTerms("  "))
@@ -49,9 +43,6 @@ func TestNormalizeTerms(t *testing.T) {
   abc`))
 }
 
-/**
- * Test collapse spaces
- */
 func TestCollapseSpaces(t *testing.T) {
   assert.Equal(t, "", CollapseSpaces(""))
   assert.Equal(t, "", CollapseSpaces(" "))
@@ -61,9 +52,6 @@ func TestCollapseSpaces(t *testing.T) {
   assert.Equal(t, "A$B$C", CollapseSpaces(" A$B$C "))
 }
 
-/**
- * Test truncate
- */
 func TestTruncate(t *testing.T) {
   assert.Equal(t, "", Truncate("", 10, ""))
   assert.Equal(t, "Hello", Truncate("Hello", 10, "..."))
@@ -73,9 +61,6 @@ func TestTruncate(t *testing.T) {
   assert.Equal(t, "Hello 日本, ...", Truncate("Hello 日本, how are you?", 10, "..."))
 }
 
-/**
- * Test normalize join
- */
 func TestNormalizeJoin(t *testing.T) {
   assert.Equal(t, "", NormalizeJoin([]string{}, "a", "b"))
   assert.Equal(t, "1", NormalizeJoin([]string{"1"}, ", ", " and "))
@@ -84,13 +69,25 @@ func TestNormalizeJoin(t *testing.T) {
   assert.Equal(t, "1, 2, 3 and 4", NormalizeJoin([]string{"1", "2", "3", "4"}, ", ", " and "))
 }
 
-/**
- * Test coalesce
- */
 func TestCoalesce(t *testing.T) {
   assert.Equal(t, "", Coalesce())
   assert.Equal(t, "", Coalesce(""))
   assert.Equal(t, "", Coalesce("", ""))
   assert.Equal(t, "a", Coalesce("", "a"))
   assert.Equal(t, "a", Coalesce("a", "b"))
+}
+
+func TestStripControl(t *testing.T) {
+  assert.Equal(t, "Hello", StripControl("Hello"))
+  assert.Equal(t, "Hello", StripControl("Hel\u0000lo"))
+  assert.Equal(t, "Hello", StripControl("Hello\u0000"))
+  assert.Equal(t, "Hello", StripControl("\u0000Hello"))
+  assert.Equal(t, "Hello", StripControl("\u0000Hello\u0000"))
+}
+
+func TestNormalizeDiacritics(t *testing.T) {
+  assert.Equal(t, "Ca c'est bien passee!", NormalizeDiacritics("Ça c'est bien passée!"))
+  assert.Equal(t, "We love umlauts!", NormalizeDiacritics("We love ümlauts!"))
+  assert.Equal(t, "aaaeeeiiiooouuuu", NormalizeDiacritics("âàáêèéîìíôòóüûùú"))
+  assert.Equal(t, "AAAEEEIIIOOOUUUU", NormalizeDiacritics("ÂÀÁÊÈÉÎÌÍÔÒÓÜÛÙÚ"))
 }
