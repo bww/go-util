@@ -13,15 +13,20 @@ import (
 
 // Normalize a string for general purpose matching
 func NormalizeString(s string) string {
-  return normalize(s, "-_',")
+  return normalize(s, "-_',", ' ')
 }
 
 // Normalize query terms
 func NormalizeTerms(s string) string {
-  return normalize(s, "-_'")
+  return normalize(s, "-_'", ' ')
 }
 
-func normalize(s string, special string) string {
+// Identize terms
+func IdentizeString(s string) string {
+  return normalize(s, "_", '_')
+}
+
+func normalize(s, special string, space rune) string {
   n := &strings.Builder{}
   
   var insp bool
@@ -33,7 +38,7 @@ func normalize(s string, special string) string {
     }else{
       if unicode.IsLetter(e) {
         if insp {
-          _, err := n.WriteRune(' ')
+          _, err := n.WriteRune(space)
           if err != nil {
             panic(err)
           }
@@ -45,7 +50,7 @@ func normalize(s string, special string) string {
         insp = false
       }else if unicode.IsDigit(e) || allowed(e, special) {
         if insp {
-          _, err := n.WriteRune(' ')
+          _, err := n.WriteRune(space)
           if err != nil {
             panic(err)
           }

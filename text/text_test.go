@@ -43,6 +43,24 @@ func TestNormalizeTerms(t *testing.T) {
   abc`))
 }
 
+func TestIdentizeString(t *testing.T) {
+  assert.Equal(t, "", IdentizeString(" "))
+  assert.Equal(t, "", IdentizeString("  "))
+  assert.Equal(t, "a", IdentizeString(" a "))
+  assert.Equal(t, "abc", IdentizeString(" ABC "))
+  assert.Equal(t, "abc_a", IdentizeString(" ABC A"))
+  assert.Equal(t, "abc_a", IdentizeString(" ABC   A "))
+  assert.Equal(t, "a_b_c_a", IdentizeString(" A_B_C_A "))
+  assert.Equal(t, "a_b_c_a", IdentizeString(" A-B-C-A "))
+  assert.Equal(t, "abc_123", IdentizeString("ABC 123"))
+  assert.Equal(t, "abc_123", IdentizeString("ABC-123"))
+  assert.Equal(t, "abc_123", IdentizeString("ABC/123"))
+  assert.Equal(t, "abc_123", IdentizeString("ABC///123"))
+  assert.Equal(t, "ça_c_est_bien_passée", IdentizeString("Ça c'est bien passée   !"))
+  assert.Equal(t, "abc", IdentizeString(`
+  abc`))
+}
+
 func TestCollapseSpaces(t *testing.T) {
   assert.Equal(t, "", CollapseSpaces(""))
   assert.Equal(t, "", CollapseSpaces(" "))
