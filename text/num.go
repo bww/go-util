@@ -32,7 +32,7 @@ func (a byLowerBound) Less(i, j int) bool { return a[i][0] < a[j][0] }
 // 
 // For example, the input: 0-5,5,6,7,8-10 produces: [[0,10]]
 // 
-// And the input: 0-5,7,9-10 produces: [[0,5],[7,1],[9,2]]
+// And the input: 0-5,7,9-10 produces: [[0,5],[7,7],[9,10]]
 // 
 func ParseRanges(s string, b []int) ([][]int, error) {
   return parseRanges(s, b, "-", strconv.Atoi)
@@ -66,7 +66,7 @@ func parseRanges(s string, b []int, d string, c NumberParser) ([][]int, error) {
       if l, err = c(e); err != nil {
         return nil, fmt.Errorf("Invalid lower bound: %v", err)
       }
-      u = l + 1
+      u = l
     }else{
       n := strings.SplitN(e, d, 2)
       n[0], n[1] = strings.TrimSpace(n[0]), strings.TrimSpace(n[1])
@@ -90,7 +90,7 @@ func parseRanges(s string, b []int, d string, c NumberParser) ([][]int, error) {
   i := 1
   for i < len(r) {
     e, p := r[i], r[i - 1]
-    if e[0] >= p[0] && e[0] <= p[1] {
+    if e[0] >= p[0] && e[0] <= p[1] + 1 {
       if e[1] > p[1] { p[1] = e[1] }  // extend right?
       r = append(r[:i], r[i+1:]...)   // discard the extraneous range
     }else{
