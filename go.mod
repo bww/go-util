@@ -1,0 +1,10 @@
+module github.com/bww/go-util
+
+go 1.12
+
+require (
+	github.com/bww/go-alert v0.0.0-20180325011200-72270072a7e5
+	github.com/stretchr/testify v1.3.0
+	golang.org/x/crypto v0.0.0-20190411191339-88737f569e3a
+	golang.org/x/text v0.3.0
+)
