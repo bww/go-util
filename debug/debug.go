@@ -83,10 +83,14 @@ func CurrentContext() string {
 	return fmt.Sprintf("%s:%d %s", relativeSourcePath(file), line, f.Name())
 }
 
-func DumpRoutines() {
+func CopyRoutines() []byte {
 	data := make([]byte, 1<<20)
 	n := runtime.Stack(data, true)
-	io.Copy(os.Stderr, bytes.NewReader(data[:n]))
+	return data[:n]
+}
+
+func DumpRoutines() {
+	io.Copy(os.Stderr, bytes.NewReader(CopyRoutines()))
 }
 
 func DumpRoutinesOnInterrupt() {
