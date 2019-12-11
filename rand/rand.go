@@ -5,25 +5,24 @@ import (
 	"fmt"
 	"io"
 	"net"
+	"strings"
 )
 
-/**
- * Cached MAC address
- */
+// Common sets for random strings
+const (
+	Uppercase    = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	Lowercase    = "abcdefghijklmnopqrstuvwxyz"
+	Alpha        = Uppercase + Lowercase
+	Digit        = "0123456789"
+	AlphaNumeric = Alpha + Digit
+	Punctuation  = "!@#$%^&*~?=-+_./|"
+	Password     = AlphaNumeric + Punctuation
+)
+
+// Cached MAC address
 var macaddr net.HardwareAddr
 
-/**
- * Content types
- */
-const (
-	CONTENT_TYPE_JSON = "application/json"
-)
-
-/**
- * Setup
- */
 func init() {
-
 	// search our network interfaces for a hardware MAC address
 	if interfaces, err := net.Interfaces(); err == nil {
 		for _, i := range interfaces {
@@ -33,69 +32,52 @@ func init() {
 			}
 		}
 	}
-
-	// if we failed to obtain the MAC address of the current computer, we will use a randomly generated 6 byte sequence instead and set the multicast bit as recommended in RFC 4122.
+	// if we failed to obtain the MAC address of the current computer, we will
+	// use a randomly generated 6 byte sequence instead and set the multicast
+	// bit as recommended in RFC 4122.
 	if macaddr == nil {
 		macaddr = make(net.HardwareAddr, 6)
 		randomBytes(macaddr)
 		macaddr[0] = macaddr[0] | 0x01
 	}
-
 }
 
-/**
- * Obtain the current host's MAC address
- */
+// Obtain the current host's MAC address
 func HardwareAddr() net.HardwareAddr {
 	return macaddr
 }
 
-/**
- * Obtain the current host's MAC address as a hex string
- */
+// Obtain the current host's MAC address as a hex string
 func HardwareKey() string {
 	return fmt.Sprintf("%x", macaddr)
 }
 
-/**
- * Generate random bytes
- */
 func RandomBytes(n int) []byte {
 	b := make([]byte, n)
 	randomBytes(b)
 	return b
 }
 
-/**
- * Read random bytes
- */
 func ReadRandom(b []byte) {
 	randomBytes(b)
 }
 
-/**
- * Generate random bytes
- */
 func randomBytes(b []byte) {
 	if _, err := io.ReadFull(rand.Reader, b); err != nil {
 		panic(err.Error()) // rand should never fail
 	}
 }
 
-/**
- * Characters used in random strings
- */
-const randomStringChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
-
-/**
- * Generate a random string representing the specified number of characters
- */
 func RandomString(n int) string {
+	return RandomStringFromSet(n, AlphaNumeric)
+}
+
+func RandomStringFromSet(n int, set string) string {
 	b := RandomBytes(n)
-	s := ""
-	l := len(randomStringChars)
+	l := len(set)
+	s := &strings.Builder{}
 	for i := 0; i < len(b); i++ {
-		s += string(randomStringChars[int(b[i])%l])
+		s.WriteRune(rune(set[int(b[i])%l]))
 	}
-	return s
+	return s.String()
 }
