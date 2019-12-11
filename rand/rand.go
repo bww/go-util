@@ -15,7 +15,7 @@ const (
 	Alpha        = Uppercase + Lowercase
 	Digit        = "0123456789"
 	AlphaNumeric = Alpha + Digit
-	Punctuation  = "!@#$%^&*~?=-+_./|"
+	Punctuation  = `!@#$%^&*~?=-+_./|`
 	Password     = AlphaNumeric + Punctuation
 )
 
