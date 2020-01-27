@@ -17,30 +17,16 @@ import (
 	"strings"
 	"sync/atomic"
 	"time"
-)
 
-import (
 	"github.com/bww/go-util/rand"
 )
 
-/**
- * A UUID
- */
 type UUID [16]byte
 
-/**
- * Zero UUID
- */
 var Zero UUID = [16]byte{}
 
-/**
- * Clock sequence
- */
 var clockSeq uint32
 
-/**
- * Variants
- */
 const (
 	VariantNCSCompat = 0
 	VariantIETF      = 2
@@ -48,9 +34,6 @@ const (
 	VariantFuture    = 7
 )
 
-/*
- * Setup global
- */
 func init() {
 	var clockSeqRand [2]byte
 	rand.ReadRandom(clockSeqRand[:])
