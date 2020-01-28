@@ -12,7 +12,7 @@ import (
 
 // the reader may need to be pooled if there is significant contention; not sure
 // if this is actually necessary or possible for crypto/rand (as opposed to math/rand)
-var entropy *ulid.MonotonicEntropy = ulid.Monotonic(rand.Reader, 0)
+var entropy = ulid.Monotonic(rand.Reader, 0)
 
 var Zero ULID = ULID{}
 

@@ -5,6 +5,8 @@ import (
 	"path"
 )
 
+// Join a base URL together with path components, similar to the
+// functionality of path.Join.
 func Join(b string, c ...interface{}) string {
 	if len(c) < 1 {
 		return b
@@ -24,4 +26,16 @@ func Join(b string, c ...interface{}) string {
 		b = b + "/"
 	}
 	return b + p
+}
+
+// Return a file URL for the provided path
+func File(p string) string {
+	var s string
+	for i := 0; i < len(p); i++ {
+		if p[i] != '/' {
+			s = p[i:]
+			break
+		}
+	}
+	return "file:///" + s
 }
