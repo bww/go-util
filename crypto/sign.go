@@ -30,15 +30,12 @@ func Verify(key []byte, digest Digest, sig string, data []byte) bool {
 
 // Produce a serialized, base64-encoded message and its signature
 func SignMessage(key []byte, digest Digest, message interface{}) (string, string, error) {
-
 	m, err := json.Marshal(message)
 	if err != nil {
 		return "", "", err
 	}
-
 	b := base64.StdEncoding.EncodeToString(m)
 	s := Sign(key, digest, []byte(b))
-
 	return b, s, nil
 }
 
@@ -47,16 +44,13 @@ func VerifyMessage(key []byte, digest Digest, sig string, message interface{}, d
 	if !Verify(key, digest, sig, []byte(data)) {
 		return ErrSignatureNotValid
 	}
-
 	m, err := base64.StdEncoding.DecodeString(data)
 	if err != nil {
 		return err
 	}
-
 	err = json.Unmarshal(m, message)
 	if err != nil {
 		return err
 	}
-
 	return nil
 }

@@ -7,9 +7,7 @@ import (
 	"crypto/sha256"
 	"crypto/subtle"
 	"hash"
-)
 
-import (
 	"golang.org/x/crypto/pbkdf2"
 )
 
@@ -27,6 +25,7 @@ type Digest int
 const (
 	SHA1 Digest = iota
 	SHA256
+	invalidDigest
 )
 
 // hash functions
@@ -37,10 +36,11 @@ var hashFuncs = []HashFunc{
 
 // Obtain the digest hash function
 func (d Digest) Func() HashFunc {
-	if d >= SHA1 && d <= SHA256 {
+	if d >= SHA1 && d < invalidDigest {
 		return hashFuncs[int(d)]
+	} else {
+		return panic("Invalid digest")
 	}
-	return nil
 }
 
 // Pad an AES block
