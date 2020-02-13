@@ -39,7 +39,7 @@ func (d Digest) Func() HashFunc {
 	if d >= SHA1 && d < invalidDigest {
 		return hashFuncs[int(d)]
 	} else {
-		return panic("Invalid digest")
+		panic("Invalid digest")
 	}
 }
 
