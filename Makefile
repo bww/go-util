@@ -1,10 +1,9 @@
 
-TEST_PKGS = github.com/bww/go-util/...
+TEST_PKGS = ./...
 
 .PHONY: all test
 
 all: test
 
 test:
-	go test -test.v $(TEST_PKGS)
-
+	go test -v $(TEST_PKGS)
