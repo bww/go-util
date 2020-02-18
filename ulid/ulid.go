@@ -31,6 +31,10 @@ func Parse(s string) (ULID, error) {
 	}
 }
 
+func (v ULID) IsZero() bool {
+	return v == Zero
+}
+
 func (v ULID) String() string {
 	return ulid.ULID(v).String()
 }

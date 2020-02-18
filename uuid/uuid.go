@@ -166,6 +166,11 @@ func FromTime(aTime time.Time) UUID {
 	return u
 }
 
+// Does this UUID represent the zero value
+func (u UUID) IsZero() bool {
+	return u == Zero
+}
+
 /*
  * String returns the UUID in it's canonical form, a 32 digit hexadecimal
  * number in the form of xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx.
