@@ -7,7 +7,7 @@ import (
 )
 
 import (
-	"github.com/bww/go-util/debug"
+	"github.com/bww/go-util/v1/debug"
 )
 
 /**

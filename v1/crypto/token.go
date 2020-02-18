@@ -1,7 +1,7 @@
 package crypto
 
 import (
-	"github.com/bww/go-util/rand"
+	"github.com/bww/go-util/v1/rand"
 )
 
 // Generate a Devise-compatible general-purpose secure token

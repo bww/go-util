@@ -18,7 +18,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/bww/go-util/rand"
+	"github.com/bww/go-util/v1/rand"
 )
 
 type UUID [16]byte
