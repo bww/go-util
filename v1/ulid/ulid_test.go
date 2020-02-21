@@ -69,3 +69,12 @@ func TestDecodeULID(t *testing.T) {
 		}
 	}
 }
+
+func TestCompareULID(t *testing.T) {
+	a := ULID{0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+	b := ULID{0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+
+	assert.Equal(t, true, a.Compare(b) > 0)
+	assert.Equal(t, true, b.Compare(a) < 0)
+	assert.Equal(t, true, a.Compare(a) == 0)
+}

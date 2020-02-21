@@ -19,6 +19,7 @@ import (
 	"time"
 
 	"github.com/bww/go-util/v1/rand"
+	"github.com/bww/go-util/v1/sort"
 )
 
 type UUID [16]byte
@@ -185,6 +186,20 @@ func (u UUID) String() string {
 	}
 	r[8], r[13], r[18], r[23] = '-', '-', '-', '-'
 	return string(r)
+}
+
+/*
+ * Lexically compare this UUID to another UUID
+ */
+func (u UUID) Compare(c sort.Comparable) int {
+	z := c.(UUID)
+	for i := 0; i < len(u); i++ {
+		a, b := u[i], z[i]
+		if a != b {
+			return int(a) - int(b)
+		}
+	}
+	return 0
 }
 
 /*

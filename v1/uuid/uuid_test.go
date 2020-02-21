@@ -15,6 +15,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestUUIDNil(t *testing.T) {
@@ -194,4 +196,13 @@ func TestUnmarshalJSON(t *testing.T) {
 		t.Errorf("no error for invalid JSON UUID")
 	}
 
+}
+
+func TestCompareUUID(t *testing.T) {
+	a, _ := Parse("486f3a88-775b-11e3-ae07-d231feb1dc81")
+	b, _ := Parse("22c82e15-3053-4b8e-bcd8-935b1e164505")
+
+	assert.Equal(t, true, a.Compare(b) > 0)
+	assert.Equal(t, true, b.Compare(a) < 0)
+	assert.Equal(t, true, a.Compare(a) == 0)
 }

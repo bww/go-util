@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/bww/go-util/v1/sort"
 	"github.com/oklog/ulid/v2"
 )
 
@@ -41,6 +42,17 @@ func (v ULID) String() string {
 
 func (v ULID) Time() time.Time {
 	return ulid.Time(ulid.ULID(v).Time())
+}
+
+func (v ULID) Compare(c sort.Comparable) int {
+	z := c.(ULID)
+	for i := 0; i < len(v); i++ {
+		a, b := v[i], z[i]
+		if a != b {
+			return int(a) - int(b)
+		}
+	}
+	return 0
 }
 
 func (v ULID) MarshalJSON() ([]byte, error) {
