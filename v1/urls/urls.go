@@ -2,6 +2,7 @@ package urls
 
 import (
 	"fmt"
+	"net/url"
 	"path"
 )
 
@@ -26,6 +27,23 @@ func Join(b string, c ...interface{}) string {
 		b = b + "/"
 	}
 	return b + p
+}
+
+// Merge the specified qweury parameters into the provided URL. Parameters
+// with existing keys are added, not replaced.
+func MergeQuery(s string, p url.Values) (string, error) {
+	u, err := url.Parse(s)
+	if err != nil {
+		return "", err
+	}
+	e := u.Query()
+	for k, v := range p {
+		for _, x := range v {
+			e.Add(k, x)
+		}
+	}
+	u.RawQuery = e.Encode()
+	return u.String(), nil
 }
 
 // Return a file URL for the provided path

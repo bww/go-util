@@ -2,6 +2,7 @@ package urls
 
 import (
 	"fmt"
+	"net/url"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -38,6 +39,50 @@ func TestJoin(t *testing.T) {
 		r := Join(e.Base, e.Components...)
 		fmt.Println("-->", r)
 		assert.Equal(t, e.Expect, r)
+	}
+}
+
+func TestMergeQuery(t *testing.T) {
+	tests := []struct {
+		Base   string
+		Query  url.Values
+		Expect string
+		Error  error
+	}{
+		{
+			"https://api.twilio.com/2010-04-01/",
+			url.Values{"a": []string{"b"}},
+			"https://api.twilio.com/2010-04-01/?a=b",
+			nil,
+		},
+		{
+			"https://api.twilio.com/2010-04-01/?",
+			url.Values{"a": []string{"b"}},
+			"https://api.twilio.com/2010-04-01/?a=b",
+			nil,
+		},
+		{
+			"https://api.twilio.com/2010-04-01/?a=b",
+			url.Values{"a": []string{"b"}},
+			"https://api.twilio.com/2010-04-01/?a=b&a=b",
+			nil,
+		},
+		{
+			"https://api.twilio.com/2010-04-01/?a=b",
+			url.Values{"a": []string{"b", "c", "d"}},
+			"https://api.twilio.com/2010-04-01/?a=b&a=b&a=c&a=d",
+			nil,
+		},
+	}
+	for _, e := range tests {
+		r, err := MergeQuery(e.Base, e.Query)
+		if e.Error != nil {
+			fmt.Println("***", err)
+			assert.Equal(t, e.Error, err)
+		} else if assert.Nil(t, err, fmt.Sprint(err)) {
+			fmt.Println("-->", r)
+			assert.Equal(t, e.Expect, r)
+		}
 	}
 }
 
