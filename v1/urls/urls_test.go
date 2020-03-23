@@ -45,37 +45,85 @@ func TestJoin(t *testing.T) {
 func TestMergeQuery(t *testing.T) {
 	tests := []struct {
 		Base   string
-		Query  url.Values
+		Query  []url.Values
 		Expect string
 		Error  error
 	}{
 		{
 			"https://api.twilio.com/2010-04-01/",
-			url.Values{"a": []string{"b"}},
+			[]url.Values{
+				{"a": []string{"b"}},
+			},
+			"https://api.twilio.com/2010-04-01/?a=b",
+			nil,
+		},
+		{
+			"https://api.twilio.com/2010-04-01/?a=b",
+			[]url.Values{},
+			"https://api.twilio.com/2010-04-01/?a=b",
+			nil,
+		},
+		{
+			"https://api.twilio.com/2010-04-01/?a=b",
+			nil,
 			"https://api.twilio.com/2010-04-01/?a=b",
 			nil,
 		},
 		{
 			"https://api.twilio.com/2010-04-01/?",
-			url.Values{"a": []string{"b"}},
+			[]url.Values{
+				{"a": []string{"b"}},
+			},
 			"https://api.twilio.com/2010-04-01/?a=b",
 			nil,
 		},
 		{
 			"https://api.twilio.com/2010-04-01/?a=b",
-			url.Values{"a": []string{"b"}},
+			[]url.Values{
+				{"a": []string{"b"}},
+			},
 			"https://api.twilio.com/2010-04-01/?a=b&a=b",
 			nil,
 		},
 		{
 			"https://api.twilio.com/2010-04-01/?a=b",
-			url.Values{"a": []string{"b", "c", "d"}},
+			[]url.Values{
+				{"a": []string{"b", "c", "d"}},
+			},
 			"https://api.twilio.com/2010-04-01/?a=b&a=b&a=c&a=d",
+			nil,
+		},
+		{
+			"https://api.twilio.com/2010-04-01/?a=b",
+			[]url.Values{
+				{"a": []string{"c"}},
+				{"a": []string{"d"}},
+			},
+			"https://api.twilio.com/2010-04-01/?a=b&a=c&a=d",
+			nil,
+		},
+		{
+			"https://api.twilio.com/2010-04-01/?a=b",
+			[]url.Values{
+				{"a": []string{"b"}},
+				{"a": []string{"c"}},
+			},
+			"https://api.twilio.com/2010-04-01/?a=b&a=b&a=c",
+			nil,
+		},
+		{
+			"https://api.twilio.com/2010-04-01/?a=b",
+			[]url.Values{
+				{"a": []string{"b"}},
+				{"a": []string{"c"}},
+				{"a": []string{"c"}},
+			},
+			"https://api.twilio.com/2010-04-01/?a=b&a=b&a=c&a=c",
 			nil,
 		},
 	}
 	for _, e := range tests {
-		r, err := MergeQuery(e.Base, e.Query)
+		r, err := MergeQuery(e.Base, e.Query...)
 		if e.Error != nil {
 			fmt.Println("***", err)
 			assert.Equal(t, e.Error, err)

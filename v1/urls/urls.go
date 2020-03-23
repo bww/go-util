@@ -31,18 +31,23 @@ func Join(b string, c ...interface{}) string {
 
 // Merge the specified qweury parameters into the provided URL. Parameters
 // with existing keys are added, not replaced.
-func MergeQuery(s string, p url.Values) (string, error) {
+func MergeQuery(s string, p ...url.Values) (string, error) {
+	if len(p) < 1 {
+		return s, nil
+	}
 	u, err := url.Parse(s)
 	if err != nil {
 		return "", err
 	}
-	e := u.Query()
-	for k, v := range p {
-		for _, x := range v {
-			e.Add(k, x)
+	q := u.Query()
+	for _, e := range p {
+		for k, v := range e {
+			for _, x := range v {
+				q.Add(k, x)
+			}
 		}
 	}
-	u.RawQuery = e.Encode()
+	u.RawQuery = q.Encode()
 	return u.String(), nil
 }
 
