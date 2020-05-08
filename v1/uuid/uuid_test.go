@@ -12,6 +12,7 @@ package uuid
 
 import (
 	"bytes"
+	"fmt"
 	"strings"
 	"testing"
 	"time"
@@ -196,6 +197,31 @@ func TestUnmarshalJSON(t *testing.T) {
 		t.Errorf("no error for invalid JSON UUID")
 	}
 
+}
+
+func TestUnmarshalBytes(t *testing.T) {
+	var a, b UUID
+	var d []byte
+	var err error
+	x := New()
+
+	d, err = x.MarshalBinary()
+	assert.Nil(t, err, fmt.Sprint(err))
+
+	a.UnmarshalBinary(d)
+	assert.Equal(t, x, a)
+
+	err = a.UnmarshalBinary([]byte{1, 2, 3})
+	assert.NotNil(t, err, "Expected an error")
+
+	d, err = x.MarshalText()
+	assert.Nil(t, err, fmt.Sprint(err))
+
+	b.UnmarshalText(d)
+	assert.Equal(t, x, b)
+
+	err = b.UnmarshalText([]byte("486f3a8Q-775b-11e3-ae07-d231feb1dc81"))
+	assert.NotNil(t, err, "Expected an error")
 }
 
 func TestCompareUUID(t *testing.T) {

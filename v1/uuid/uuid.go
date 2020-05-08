@@ -41,16 +41,10 @@ func init() {
 	clockSeq = uint32(clockSeqRand[1])<<8 | uint32(clockSeqRand[0])
 }
 
-/*
- * A new Random UUID.
- */
 func New() UUID {
 	return Random()
 }
 
-/*
- * Parse parses a 32 digit hexadecimal number (that might contain hypens) represanting an UUID.
- */
 func Parse(input string) (UUID, error) {
 	var u UUID
 	j := 0
@@ -75,9 +69,6 @@ func Parse(input string) (UUID, error) {
 	return u, nil
 }
 
-/*
- * FromBytes converts a raw byte slice to an UUID.
- */
 func FromBytes(input []byte) (UUID, error) {
 	var u UUID
 	if len(input) != 16 {
@@ -88,9 +79,6 @@ func FromBytes(input []byte) (UUID, error) {
 	return u, nil
 }
 
-/*
- * RandomUUID generates a totally random UUID (version 4) as described in RFC 4122.
- */
 func Random() UUID {
 	var u UUID
 	rand.ReadRandom(u[:])
@@ -101,24 +89,16 @@ func Random() UUID {
 	return u
 }
 
-/*
- * Base time for version 1 UUIDs
- */
 var timeBase = time.Date(1582, time.October, 15, 0, 0, 0, 0, time.UTC).Unix()
 
-/*
- * TimeUUID generates a new time based UUID (version 1) using the current time as the timestamp.
- */
 func Time() UUID {
 	return FromTime(time.Now())
 }
 
-/*
- * UUIDBaseFromTime generates a new time based UUID (version 1) in the same
- * manner as UUIDFromTime with the exception that the clock sequence component
- * is zeroed. This allows for the construction of a time UUID that represents
- * the lower bound of any other UUID that could be generated for the same time.
- */
+// UUIDBaseFromTime generates a new time based UUID (version 1) in the same
+// manner as UUIDFromTime with the exception that the clock sequence component
+// is zeroed. This allows for the construction of a time UUID that represents
+// the lower bound of any other UUID that could be generated for the same time.
 func BaseFromTime(aTime time.Time) UUID {
 	var u UUID
 
@@ -140,11 +120,9 @@ func BaseFromTime(aTime time.Time) UUID {
 	return u
 }
 
-/*
- * UUIDFromTime generates a new time based UUID (version 1) as described in
- * RFC 4122. This UUID contains the MAC address of the node that generated
- * the UUID, the given timestamp and a sequence number.
- */
+// UUIDFromTime generates a new time based UUID (version 1) as described in
+// RFC 4122. This UUID contains the MAC address of the node that generated
+// the UUID, the given timestamp and a sequence number.
 func FromTime(aTime time.Time) UUID {
 	var u UUID
 
@@ -172,10 +150,8 @@ func (u UUID) IsZero() bool {
 	return u == Zero
 }
 
-/*
- * String returns the UUID in it's canonical form, a 32 digit hexadecimal
- * number in the form of xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx.
- */
+// String returns the UUID in it's canonical form, a 32 digit hexadecimal
+// number in the form of xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx.
 func (u UUID) String() string {
 	var offsets = [...]int{0, 2, 4, 6, 9, 11, 14, 16, 19, 21, 24, 26, 28, 30, 32, 34}
 	const hexString = "0123456789abcdef"
@@ -188,9 +164,7 @@ func (u UUID) String() string {
 	return string(r)
 }
 
-/*
- * Lexically compare this UUID to another UUID
- */
+// Lexically compare this UUID to another UUID
 func (u UUID) Compare(c sort.Comparable) int {
 	z := c.(UUID)
 	for i := 0; i < len(u); i++ {
@@ -202,18 +176,13 @@ func (u UUID) Compare(c sort.Comparable) int {
 	return 0
 }
 
-/*
- * Bytes returns the raw byte slice for this UUID. A UUID is always 128 bits
- * (16 bytes) long.
- */
+// Bytes returns the raw byte slice for this UUID. A UUID is always 128 bits (16 bytes) long.
 func (u UUID) Bytes() []byte {
 	return u[:]
 }
 
-/*
- * Variant returns the variant of this UUID. This package will only generate
- * UUIDs in the IETF variant.
- */
+// Variant returns the variant of this UUID. This package will only generate
+// UUIDs in the IETF variant.
 func (u UUID) Variant() int {
 	x := u[8]
 	if x&0x80 == 0 {
@@ -227,18 +196,14 @@ func (u UUID) Variant() int {
 	}
 }
 
-/*
- * Version extracts the version of this UUID variant. The RFC 4122 describes
- * five kinds of UUIDs.
- */
+// Version extracts the version of this UUID variant. The RFC 4122 describes
+// five kinds of UUIDs.
 func (u UUID) Version() int {
 	return int(u[6] & 0xF0 >> 4)
 }
 
-/*
- * Node extracts the MAC address of the node who generated this UUID. It will
- * return nil if the UUID is not a time based UUID (version 1).
- */
+// Node extracts the MAC address of the node who generated this UUID. It will
+// return nil if the UUID is not a time based UUID (version 1).
 func (u UUID) Node() []byte {
 	if u.Version() != 1 {
 		return nil
@@ -247,10 +212,8 @@ func (u UUID) Node() []byte {
 	}
 }
 
-/*
- * Timestamp extracts the timestamp information from a time based UUID
- * (version 1).
- */
+// Timestamp extracts the timestamp information from a time based UUID
+// (version 1).
 func (u UUID) Timestamp() int64 {
 	if u.Version() != 1 {
 		return 0
@@ -260,9 +223,7 @@ func (u UUID) Timestamp() int64 {
 		int64(uint64(u[6]&0x0F)<<56|uint64(u[7])<<48)
 }
 
-/*
- * Time is like Timestamp, except that it returns a time.Time.
- */
+// Time is like Timestamp, except that it returns a time.Time.
 func (u UUID) Time() time.Time {
 	if u.Version() != 1 {
 		return time.Time{}
@@ -273,9 +234,32 @@ func (u UUID) Time() time.Time {
 	return time.Unix(sec+timeBase, nsec).UTC()
 }
 
-/**
- * Marshal
- */
+func (u UUID) MarshalBinary() ([]byte, error) {
+	return u[:], nil
+}
+
+func (u *UUID) UnmarshalBinary(data []byte) error {
+	v, err := FromBytes(data)
+	if err != nil {
+		return err
+	}
+	*u = v
+	return nil
+}
+
+func (u UUID) MarshalText() ([]byte, error) {
+	return []byte(u.String()), nil
+}
+
+func (u *UUID) UnmarshalText(data []byte) error {
+	v, err := Parse(string(data))
+	if err != nil {
+		return err
+	}
+	*u = v
+	return nil
+}
+
 func (u UUID) MarshalJSON() ([]byte, error) {
 	if u == Zero {
 		return []byte("null"), nil
@@ -284,9 +268,6 @@ func (u UUID) MarshalJSON() ([]byte, error) {
 	}
 }
 
-/**
- * Unmarshal
- */
 func (u *UUID) UnmarshalJSON(data []byte) error {
 
 	raw := string(data)
@@ -308,16 +289,10 @@ func (u *UUID) UnmarshalJSON(data []byte) error {
 	return err
 }
 
-/**
- * Value
- */
 func (v UUID) Value() (driver.Value, error) {
 	return v.String(), nil
 }
 
-/**
- * Scan
- */
 func (v *UUID) Scan(src interface{}) error {
 	var err error
 	switch c := src.(type) {
