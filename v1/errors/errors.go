@@ -4,41 +4,30 @@ import (
 	"fmt"
 )
 
-/**
- * An error
- */
 type Error struct {
 	Message string      `json:"message"`
 	Detail  interface{} `json:"detail,omitempty"`
 	Cause   error       `json:"-"`
 }
 
-/**
- * Create a status error
- */
 func Errorf(f string, a ...interface{}) *Error {
 	return &Error{fmt.Sprintf(f, a...), nil, nil}
 }
 
-/**
- * Set detail
- */
 func (e *Error) SetDetail(d interface{}) *Error {
 	e.Detail = d
 	return e
 }
 
-/**
- * Set the underlying cause
- */
 func (e *Error) SetCause(c error) *Error {
 	e.Cause = c
 	return e
 }
 
-/**
- * Obtain the error message
- */
+func (e Error) Unwrap() error {
+	return e.Cause
+}
+
 func (e Error) Error() string {
 	if e.Cause != nil {
 		return fmt.Sprintf("%v: %v", e.Message, e.Cause.Error())
@@ -47,16 +36,11 @@ func (e Error) Error() string {
 	}
 }
 
-/**
- * A set of errors
- */
 type Set []error
 
-/**
- * Create a set of errors. Only non-nil parameters are included. If only
- * one non-nil parameter is provided it is simply returned and a set is
- * not actually created.
- */
+// Create a set of errors. Only non-nil parameters are included. If only
+// one non-nil parameter is provided it is simply returned and a set is
+// not actually created.
 func NewSet(e ...error) error {
 	s := make(Set, 0)
 	for _, v := range e {
@@ -71,9 +55,8 @@ func NewSet(e ...error) error {
 	}
 }
 
-/**
- * Obtain the error message
- */
+// Conform to error. This method simply concatenates the result of Error()
+// for all the elements of the set and returns the result.
 func (e Set) Error() string {
 	var s string
 	for i, v := range e {
