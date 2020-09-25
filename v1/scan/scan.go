@@ -7,6 +7,7 @@ package scan
 
 import (
 	"fmt"
+	"strings"
 	"unicode"
 	"unicode/utf8"
 )
@@ -41,7 +42,6 @@ func Ident(p string) (string, string, error) {
 // Scan a parameter string
 func String(p string, q, x rune) (string, string, error) {
 	var closed bool
-	var s string
 	var err error
 
 	if c, w := utf8.DecodeRuneInString(p); c != q {
@@ -49,6 +49,8 @@ func String(p string, q, x rune) (string, string, error) {
 	} else {
 		p = p[w:]
 	}
+
+	b := &strings.Builder{}
 
 outer:
 	for len(p) > 0 {
@@ -64,16 +66,16 @@ outer:
 			if err != nil {
 				return "", p, err
 			}
-			s += string(r)
+			b.WriteRune(r)
 		default:
-			s += string(c)
+			b.WriteRune(c)
 		}
 	}
 
 	if !closed {
 		return "", p, ErrInvalidSequence
 	}
-	return s, p, nil
+	return b.String(), p, nil
 }
 
 // Unescape escape sequences in a string
