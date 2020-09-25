@@ -1,10 +1,5 @@
 package scan
 
-// This package is convenient, but it is not designed to be especially
-// performant. In particular, strings are concatenated naively rather
-// than using buffers. For short input it should be suitable for most
-// uses, however.
-
 import (
 	"fmt"
 	"strings"
