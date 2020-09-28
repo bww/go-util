@@ -2,7 +2,7 @@ package sets
 
 type Element interface {
 	Key() string
-	Equals(Element) bool
+	Equals(interface{}) bool
 }
 
 type Set []Element
@@ -45,7 +45,7 @@ type stringElement string
 
 func (e stringElement) Key() string { return string(e) }
 
-func (e stringElement) Equals(v Element) bool {
+func (e stringElement) Equals(v interface{}) bool {
 	if c, ok := v.(stringElement); ok && c == e {
 		return true
 	} else {
