@@ -18,6 +18,14 @@ func TestSplit(t *testing.T) {
 		Error      error
 	}{
 		{
+			`A`,
+			[]string{
+				"A",
+			},
+			delim, esc,
+			nil,
+		},
+		{
 			`A,B,C`,
 			[]string{
 				"A", "B", "C",
