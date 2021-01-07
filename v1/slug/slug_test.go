@@ -54,7 +54,7 @@ func TestNormalizeSmartPunctuation(t *testing.T) {
 func TestStripControlCharacters(t *testing.T) {
 	s := "a"
 	for i := 0; i < 20; i++ {
-		s += string(i)
+		s += string(rune(i))
 	}
 	s += "b"
 	assert.Equal(t, "ab", stripControlCharacters(s))
