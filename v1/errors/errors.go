@@ -10,6 +10,14 @@ type Error struct {
 	Cause   error       `json:"-"`
 }
 
+func Wrap(err error, msg string) *Error {
+	return &Error{Message: msg, Cause: err}
+}
+
+func Wrapf(err error, f string, a ...interface{}) *Error {
+	return Wrap(err, fmt.Sprintf(f, a...))
+}
+
 func Errorf(f string, a ...interface{}) *Error {
 	return &Error{fmt.Sprintf(f, a...), nil, nil}
 }
