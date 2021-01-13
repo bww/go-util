@@ -15,6 +15,11 @@ func TestTemplateOneshot(t *testing.T) {
 		Error  bool
 	}{
 		{
+			Tmpl:   "Hello, nobody",
+			Data:   nil,
+			Expect: []byte("Hello, nobody"),
+		},
+		{
 			Tmpl: "Hello, {{ .Name }}",
 			Data: struct {
 				Name string
