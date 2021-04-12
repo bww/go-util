@@ -2,7 +2,10 @@ package contexts
 
 import (
 	"context"
+	"errors"
 )
+
+var ErrCancelled = errors.New("Cancelled by context")
 
 // Continue is a convenience wrapper around a common context
 // cancelation check. It is intended to be used when processing
