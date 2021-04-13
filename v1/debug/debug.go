@@ -22,20 +22,36 @@ var previous time.Time
 
 const threshold = time.Second * 3
 
-var sourceRoots []string
+var (
+	// When sourcePath is set via the linker at compile time, we enable
+	// relative source paths, which strips off a shared prefix. This can
+	// be enabled by providing the following flags to go {run,build,test}:
+	//
+	//   -ldflags="-X github.com/bww/go-util/v1/debug.sourcePath=$SOURCE_PREFIX_PATH"
+	//
+	// The format of SOURCE_PREFIX_PATH is a Unix PATH, possibly containing
+	// multiple components separated by ':'.
+	//
+	sourcePath  string
+	sourceRoots []string
+)
 
 func init() {
-	sourceRoots = make([]string, 0)
-	for _, e := range strings.Split(os.Getenv("GOPATH"), ":") {
-		e = strings.TrimSpace(e)
-		if e != "" {
-			sourceRoots = append(sourceRoots, e)
-		}
-	}
 	// init defaults from the environment
 	DEBUG = istrue(os.Getenv("DEBUG"), os.Getenv("GOUTIL_DEBUG"))
 	VERBOSE = istrue(os.Getenv("VERBOSE"), os.Getenv("GOUTIL_VERBOSE"))
 	TRACE = istrue(os.Getenv("TRACE"), os.Getenv("GOUTIL_TRACE"))
+
+	// source root prefixes, if specified
+	if sourcePath != "" {
+		sourceRoots = make([]string, 0)
+		for _, e := range strings.Split(sourcePath, ":") {
+			e = strings.TrimSpace(e)
+			if e != "" {
+				sourceRoots = append(sourceRoots, e)
+			}
+		}
+	}
 }
 
 func relativeSourcePath(p string) string {
