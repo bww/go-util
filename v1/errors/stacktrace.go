@@ -21,6 +21,10 @@ func Stacktrace(err error) error {
 	}
 }
 
+func (e stacktraceError) Frames() []debug.Frame {
+	return e.stack
+}
+
 func (e stacktraceError) Unwrap() error {
 	return e.err
 }
