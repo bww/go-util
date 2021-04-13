@@ -29,8 +29,8 @@ func (e stacktraceError) Error() string {
 	b := &strings.Builder{}
 	b.WriteString(e.err.Error())
 	b.WriteString(":\n")
-	for _, e := range e.stack {
-		b.WriteString(fmt.Sprintf("\t%v\n", e))
+	for _, f := range e.stack {
+		b.WriteString(fmt.Sprintf("\t%v\n", f))
 	}
 	return b.String()
 }
