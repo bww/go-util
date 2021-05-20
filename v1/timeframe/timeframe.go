@@ -14,7 +14,7 @@ type Timeframe struct {
 }
 
 // Create a timeframe
-func NewTimeframe(f, t time.Time) Timeframe {
+func New(f, t time.Time) Timeframe {
 	return Timeframe{&f, &t}
 }
 
