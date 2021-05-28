@@ -22,8 +22,8 @@ type Iterator struct {
 	closer sync.Once
 }
 
-func New(cxt context.Context, buf int) *Iterator {
-	return &Iterator{
+func New(cxt context.Context, buf int) Iterator {
+	return Iterator{
 		cxt:  cxt,
 		data: make(chan Result, buf),
 	}
