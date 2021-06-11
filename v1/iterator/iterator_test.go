@@ -20,6 +20,8 @@ func TestIterator(t *testing.T) {
 
 	err = it.Close()
 	assert.Nil(t, err, fmt.Sprint(err))
+	err = it.Close() // close twice, this should be fine
+	assert.Nil(t, err, fmt.Sprint(err))
 
 	for i := 0; ; i++ {
 		val, err := it.Next()

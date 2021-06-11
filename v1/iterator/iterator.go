@@ -19,13 +19,14 @@ type Result struct {
 type Iterator struct {
 	cxt    context.Context
 	data   chan Result
-	closer sync.Once
+	closer *sync.Once
 }
 
 func New(cxt context.Context, buf int) Iterator {
 	return Iterator{
-		cxt:  cxt,
-		data: make(chan Result, buf),
+		cxt:    cxt,
+		data:   make(chan Result, buf),
+		closer: &sync.Once{},
 	}
 }
 
