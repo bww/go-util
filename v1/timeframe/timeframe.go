@@ -1,16 +1,25 @@
 package timeframe
 
 import (
+	"errors"
+	"strings"
 	"time"
 )
+
+const (
+	encodedLayout = "2006-01-02T15:04:05.999999999Z07:00" // this is: time.RFC3339Nano, but guaranteed not to change
+	sep           = ".."
+)
+
+var errMalformed = errors.New("Malformed")
 
 // A timeframe with no bounds, representing all of time
 var Forever = Timeframe{}
 
 // A timeframe
 type Timeframe struct {
-	Since *time.Time `json:"since"`
-	Until *time.Time `json:"until"`
+	Since *time.Time `json:"since" db:"since"`
+	Until *time.Time `json:"until" db:"until"`
 }
 
 // Create a timeframe
@@ -26,6 +35,43 @@ func NewUntil(t time.Time) Timeframe {
 // Create a timeframe from the specified time to +inf
 func NewSince(f time.Time) Timeframe {
 	return Timeframe{&f, nil}
+}
+
+// Parse a timeframe from its encoded format
+func Parse(s string) (Timeframe, error) {
+	if s == "" { // empty string is a valid unbounded timeframe
+		return Timeframe{}, nil
+	}
+
+	var l, r string
+	if x := strings.Index(s, sep); x < 0 {
+		return Timeframe{}, errMalformed
+	} else {
+		l, r = s[:x], s[x+len(sep):]
+	}
+
+	var since *time.Time
+	if l != "" {
+		v, err := time.Parse(encodedLayout, l)
+		if err != nil {
+			return Timeframe{}, err
+		}
+		since = &v
+	}
+
+	var until *time.Time
+	if r != "" {
+		v, err := time.Parse(encodedLayout, r)
+		if err != nil {
+			return Timeframe{}, err
+		}
+		until = &v
+	}
+
+	return Timeframe{
+		Since: since,
+		Until: until,
+	}, nil
 }
 
 // Is a timeframe finite (is bounded)
@@ -60,11 +106,11 @@ func (t Timeframe) Contains(a time.Time) bool {
 func (t Timeframe) String() string {
 	var s string
 	if t.Since != nil {
-		s += (*t.Since).String()
+		s += (*t.Since).Format(encodedLayout)
 	}
-	s += ".."
+	s += sep
 	if t.Until != nil {
-		s += (*t.Until).String()
+		s += (*t.Until).Format(encodedLayout)
 	}
 	return s
 }
