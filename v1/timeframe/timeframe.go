@@ -136,8 +136,7 @@ func (t Timeframe) CompareDuration(d time.Duration) int {
 	if t.Until == nil || t.Since == nil {
 		return 1
 	}
-	to := *(t.Until)
-	from := *(t.Since)
+	to, from := *(t.Until), *(t.Since)
 	if v := to.Sub(from); v > d {
 		return 1
 	} else if v < d {
