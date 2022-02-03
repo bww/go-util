@@ -33,13 +33,10 @@ func New(cxt context.Context, buf int) *Iterator {
 
 func (t *Iterator) Write(r Result) error {
 	t.mx.RLock()
-	// if we're already closed, the write cannot succeed and it doesn't
-	// matter if we're cancelled; return an error immediately
+	defer t.mx.RUnlock()
 	if t.closed {
-		t.mx.RUnlock()
 		return ErrClosed
 	}
-	defer t.mx.RUnlock()
 	select {
 	case <-t.cxt.Done():
 		return ErrCancelled
