@@ -1,6 +1,8 @@
 package slices
 
 import (
+	"fmt"
+	"strconv"
 	"strings"
 	"testing"
 
@@ -22,5 +24,26 @@ func TestApply(t *testing.T) {
 
 	for _, e := range tests {
 		assert.Equal(t, e.Output, Apply(e.Input, e.Func))
+	}
+}
+
+func TestConvert(t *testing.T) {
+	tests := []struct {
+		Input  []string
+		Output []int
+		Func   func(string) (int, error)
+	}{
+		{
+			[]string{"10", "20", "50"},
+			[]int{10, 20, 50},
+			strconv.Atoi,
+		},
+	}
+
+	for _, e := range tests {
+		v, err := Convert(e.Input, e.Func)
+		if assert.Nil(t, err, fmt.Sprint(err)) {
+			assert.Equal(t, e.Output, v)
+		}
 	}
 }
