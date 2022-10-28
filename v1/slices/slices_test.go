@@ -44,3 +44,32 @@ func TestMap(t *testing.T) {
 		assert.Equal(t, e.Output, Map(e.Input, e.Func))
 	}
 }
+
+func TestSort(t *testing.T) {
+	tests := []struct {
+		Input  []int
+		Output []int
+		Cmp    Comparator[int]
+	}{
+		{
+			[]int{3, 2, 1},
+			[]int{1, 2, 3},
+			func(a, b int) int {
+				return a - b
+			},
+		},
+		{
+			[]int{1, 2, 3},
+			[]int{3, 2, 1},
+			func(a, b int) int { // compare inverse
+				return b - a
+			},
+		},
+	}
+
+	for _, e := range tests {
+		assert.Equal(t, e.Output, Sorted(e.Input, e.Cmp))
+		Sort(e.Input, e.Cmp) // sorts input in place
+		assert.Equal(t, e.Output, e.Input)
+	}
+}
