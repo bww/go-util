@@ -144,3 +144,16 @@ func (t Timeframe) CompareDuration(d time.Duration) int {
 	}
 	return 0
 }
+
+func (t Timeframe) MarshalColumn() ([]byte, error) {
+	return []byte(t.String()), nil
+}
+
+func (t *Timeframe) UnmarshalColumn(text []byte) error {
+	v, err := Parse(string(text))
+	if err != nil {
+		return err
+	}
+	*t = v
+	return nil
+}

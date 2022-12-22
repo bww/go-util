@@ -102,3 +102,53 @@ func TestEncodeTimeframe(t *testing.T) {
 		}
 	}
 }
+
+func TestMarshalTimeframeColumn(t *testing.T) {
+	tests := []struct {
+		TF  Timeframe
+		Enc []byte
+	}{
+		{
+			TF:  Timeframe{},
+			Enc: []byte(".."),
+		},
+		{
+			TF:  New(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC), time.Date(2021, 1, 1, 0, 0, 0, 0, time.UTC)),
+			Enc: []byte("2020-01-01T00:00:00Z..2021-01-01T00:00:00Z"),
+		},
+		{
+			TF:  New(time.Date(2020, 1, 1, 0, 0, 0, 1, time.UTC), time.Date(2021, 1, 1, 0, 0, 0, 1, time.UTC)),
+			Enc: []byte("2020-01-01T00:00:00.000000001Z..2021-01-01T00:00:00.000000001Z"),
+		},
+		{
+			TF:  NewSince(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)),
+			Enc: []byte("2020-01-01T00:00:00Z.."),
+		},
+		{
+			TF:  NewSince(time.Date(2020, 1, 1, 0, 0, 0, 1, time.UTC)),
+			Enc: []byte("2020-01-01T00:00:00.000000001Z.."),
+		},
+		{
+			TF:  NewUntil(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)),
+			Enc: []byte("..2020-01-01T00:00:00Z"),
+		},
+		{
+			TF:  NewUntil(time.Date(2020, 1, 1, 0, 0, 0, 1, time.UTC)),
+			Enc: []byte("..2020-01-01T00:00:00.000000001Z"),
+		},
+	}
+	for _, e := range tests {
+		enc, err := e.TF.MarshalColumn()
+		if assert.NoError(t, err) {
+			fmt.Println(">>>", e.TF, "→", string(enc))
+			if assert.Equal(t, e.Enc, enc) {
+				var dec Timeframe
+				err = dec.UnmarshalColumn(enc)
+				if assert.NoError(t, err) {
+					fmt.Println("<<<", string(enc), "→", dec)
+					assert.Equal(t, e.TF, dec)
+				}
+			}
+		}
+	}
+}
