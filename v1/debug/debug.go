@@ -76,7 +76,7 @@ type Frame struct {
 }
 
 func (f Frame) String() string {
-	return fmt.Sprintf("%s:%d %s", f.File, f.Line, f.Name)
+	return fmt.Sprintf("%s:%d\n    %s", f.File, f.Line, f.Name)
 }
 
 func Stacktrace() []Frame {
