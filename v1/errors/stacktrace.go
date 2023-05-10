@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/bww/go-util/v1/debug"
+	"github.com/bww/go-util/v1/text"
 )
 
 type stacktraceError struct {
@@ -31,10 +32,8 @@ func (e stacktraceError) Unwrap() error {
 
 func (e stacktraceError) Error() string {
 	b := &strings.Builder{}
-	b.WriteString(e.err.Error())
-	b.WriteString(":\n")
 	for _, f := range e.stack {
-		b.WriteString(fmt.Sprintf("\t%v\n", f))
+		b.WriteString(fmt.Sprintf("%v\n", f))
 	}
-	return b.String()
+	return fmt.Sprintf("%s:\n%s", e.err.Error(), text.Indent(b.String(), "    "))
 }
