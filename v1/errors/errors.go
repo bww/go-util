@@ -75,3 +75,13 @@ func (e Set) Error() string {
 	}
 	return s
 }
+
+// Support error unwrapping. For an error set this simply returns the first
+// error in the set, if any, as the unwrapped value.
+func (e Set) Unwrap() error {
+	if len(e) > 0 {
+		return e[0]
+	} else {
+		return nil
+	}
+}
