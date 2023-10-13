@@ -45,6 +45,72 @@ func TestMap(t *testing.T) {
 	}
 }
 
+func TestFlatten(t *testing.T) {
+	tests := []struct {
+		Input  [][]int
+		Output []int
+	}{
+		{
+			[][]int{},
+			[]int{},
+		},
+		{
+			[][]int{
+				{},
+				{},
+			},
+			[]int{},
+		},
+		{
+			[][]int{
+				{0, 1, 2},
+			},
+			[]int{
+				0, 1, 2,
+			},
+		},
+		{
+			[][]int{
+				{0, 1, 2},
+				{3, 4, 5},
+				{6, 7, 8},
+			},
+			[]int{
+				0, 1, 2, 3, 4, 5, 6, 7, 8,
+			},
+		},
+	}
+
+	for _, e := range tests {
+		assert.Equal(t, e.Output, Flatten(e.Input))
+	}
+}
+
+func TestFlatMap(t *testing.T) {
+	tests := []struct {
+		Input  []rune
+		Output []int
+		Func   func(rune) []int
+	}{
+		{
+			[]rune{'a', 'b', 'c'},
+			[]int{0, 0, 1, 0, 1, 2},
+			func(c rune) []int { // map a lowercase latin rune to the set of indexes through it's alphabetic ordinal
+				var s []int
+				n := int(c) - int('a')
+				for i := 0; i <= n; i++ {
+					s = append(s, i)
+				}
+				return s
+			},
+		},
+	}
+
+	for _, e := range tests {
+		assert.Equal(t, e.Output, FlatMap(e.Input, e.Func))
+	}
+}
+
 func TestSort(t *testing.T) {
 	tests := []struct {
 		Input  []int

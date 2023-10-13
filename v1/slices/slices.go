@@ -4,8 +4,8 @@ import (
 	"sort"
 )
 
-// Apply a function to every element in a slice, returning
-// the parameter slice, whose elements may be mutated.
+// Apply a function to every element in a slice, returning the parameter
+// slice, whose elements may be mutated.
 func Apply[T any](s []T, f func(T) T) []T {
 	for i, e := range s {
 		s[i] = f(e)
@@ -13,12 +13,39 @@ func Apply[T any](s []T, f func(T) T) []T {
 	return s
 }
 
-// Map every element in an input slice to a countepart output
+// Map converts every element in an input slice to a countepart output
 // element by applying the specified function.
 func Map[X, Y any](s []X, f func(X) Y) []Y {
 	r := make([]Y, len(s))
 	for i, e := range s {
 		r[i] = f(e)
+	}
+	return r
+}
+
+// Flatten creates a new output slice that contains the elements from the
+// specified input slices.
+func Flatten[X any](s [][]X) []X {
+	r := make([]X, 0, len(s))
+	for _, e := range s {
+		for _, x := range e {
+			r = append(r, x)
+		}
+	}
+	return r
+}
+
+// FlatMap converts every element in an input slice to a countepart output
+// slice by applying the specified function, then flatten the output slices
+// into a single array of elements.
+//
+// This is conceptually the equivalent of Flatten(Map(...))
+func FlatMap[X, Y any](s []X, f func(X) []Y) []Y {
+	r := make([]Y, 0, len(s))
+	for _, e := range s {
+		for _, x := range f(e) {
+			r = append(r, x)
+		}
 	}
 	return r
 }
