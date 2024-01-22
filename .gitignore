@@ -1,4 +1,5 @@
 build/
+.*.swp
 
 # Run-time data directories
 **/dist/
