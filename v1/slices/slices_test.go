@@ -45,6 +45,22 @@ func TestMap(t *testing.T) {
 	}
 }
 
+func TestMapAny(t *testing.T) {
+	tests := []struct {
+		Input  []rune
+		Output []any
+	}{
+		{
+			[]rune{'a', 'b', 'c'},
+			[]any{'a', 'b', 'c'},
+		},
+	}
+
+	for _, e := range tests {
+		assert.Equal(t, e.Output, MapAny(e.Input))
+	}
+}
+
 func TestFlatten(t *testing.T) {
 	tests := []struct {
 		Input  [][]int

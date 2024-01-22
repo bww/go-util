@@ -23,6 +23,17 @@ func Map[X, Y any](s []X, f func(X) Y) []Y {
 	return r
 }
 
+// MapAny converts every element in an input slice to a countepart output
+// element containing the same input but cast to any/interface{}. This is a
+// special case of Map which provides a convenience for a common use case.
+func MapAny[X any](s []X) []any {
+	r := make([]any, len(s))
+	for i, e := range s {
+		r[i] = e
+	}
+	return r
+}
+
 // Flatten creates a new output slice that contains the elements from the
 // specified input slices.
 func Flatten[X any](s [][]X) []X {
