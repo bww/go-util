@@ -93,11 +93,9 @@ func TestMergeValues(t *testing.T) {
 		},
 	}
 	for _, e := range tests {
-		r, err := MergeValues(e.A, e.B, e.Opts...)
-		if assert.NoError(t, err) {
-			fmt.Println("-->", r)
-			assert.Equal(t, e.Expect, r)
-		}
+		r := MergeValues(e.A, e.B, e.Opts...)
+		fmt.Println("-->", r)
+		assert.Equal(t, e.Expect, r)
 	}
 }
 

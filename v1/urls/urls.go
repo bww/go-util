@@ -39,11 +39,7 @@ func MergeQueryOpts(s string, p url.Values, opts ...MergeOption) (string, error)
 	if err != nil {
 		return "", err
 	}
-	q, err := MergeValues(u.Query(), p, opts...)
-	if err != nil {
-		return "", err
-	}
-	u.RawQuery = q.Encode()
+	u.RawQuery = MergeValues(u.Query(), p, opts...).Encode()
 	return u.String(), nil
 }
 
