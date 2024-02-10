@@ -29,8 +29,9 @@ func Join(b string, c ...interface{}) string {
 	return b + p
 }
 
-// Merge the specified qweury parameters into the provided URL. Parameters
-// with existing keys are added, not replaced.
+// Merge the specified queury parameters into the provided URL. Parameters
+// with existing keys are added, not replaced. This function is depreacated
+// and MergeParams() or MergeValues() should be preferred.
 func MergeQuery(s string, p ...url.Values) (string, error) {
 	if len(p) < 1 {
 		return s, nil
@@ -48,6 +49,21 @@ func MergeQuery(s string, p ...url.Values) (string, error) {
 		}
 	}
 	u.RawQuery = q.Encode()
+	return u.String(), nil
+}
+
+// Merge the specified queury parameters into the provided URL. This version
+// accepts a set of options which control how the merge is performed. By
+// default, parameters with existing keys are replaced, not added.
+func MergeParams(s string, p url.Values, opts ...MergeOption) (string, error) {
+	if len(p) < 1 {
+		return s, nil
+	}
+	u, err := url.Parse(s)
+	if err != nil {
+		return "", err
+	}
+	u.RawQuery = MergeValues(u.Query(), p, opts...).Encode()
 	return u.String(), nil
 }
 

@@ -134,6 +134,102 @@ func TestMergeQuery(t *testing.T) {
 	}
 }
 
+func TestMergeParams(t *testing.T) {
+	tests := []struct {
+		Base   string
+		A      url.Values
+		Opts   []MergeOption
+		Expect string
+		Error  error
+	}{
+		{
+			Base: "https://api.twilio.com/2010-04-01/",
+			A: url.Values{
+				"a": []string{"b"},
+			},
+			Expect: "https://api.twilio.com/2010-04-01/?a=b",
+		},
+		{
+			Base:   "https://api.twilio.com/2010-04-01/?a=b",
+			A:      url.Values{},
+			Expect: "https://api.twilio.com/2010-04-01/?a=b",
+		},
+		{
+			Base:   "https://api.twilio.com/2010-04-01/?a=b",
+			A:      nil,
+			Expect: "https://api.twilio.com/2010-04-01/?a=b",
+		},
+		{
+			Base: "https://api.twilio.com/2010-04-01/?",
+			A: url.Values{
+				"a": []string{"b"},
+			},
+			Expect: "https://api.twilio.com/2010-04-01/?a=b",
+		},
+		{
+			Base: "https://api.twilio.com/2010-04-01/?a=b",
+			A: url.Values{
+				"a": []string{"b"},
+			},
+			Expect: "https://api.twilio.com/2010-04-01/?a=b",
+		},
+		{
+			Base: "https://api.twilio.com/2010-04-01/?a=b",
+			A: url.Values{
+				"a": []string{"b"},
+			},
+			Opts: []MergeOption{
+				Append(true),
+			},
+			Expect: "https://api.twilio.com/2010-04-01/?a=b&a=b",
+		},
+		{
+			Base: "https://api.twilio.com/2010-04-01/?a=b",
+			A: url.Values{
+				"a": []string{"b", "c", "d"},
+			},
+			Expect: "https://api.twilio.com/2010-04-01/?a=b&a=c&a=d",
+		},
+		{
+			Base: "https://api.twilio.com/2010-04-01/?a=b",
+			A: url.Values{
+				"a": []string{"b", "c", "d"},
+			},
+			Opts: []MergeOption{
+				Append(true),
+			},
+			Expect: "https://api.twilio.com/2010-04-01/?a=b&a=b&a=c&a=d",
+		},
+		{
+			Base: "https://api.twilio.com/2010-04-01/?a=b&a=c&a=d",
+			A: url.Values{
+				"a": []string{"c", "d"},
+			},
+			Expect: "https://api.twilio.com/2010-04-01/?a=c&a=d",
+		},
+		{
+			Base: "https://api.twilio.com/2010-04-01/?a=b&a=c&a=d",
+			A: url.Values{
+				"a": []string{"c", "d"},
+			},
+			Opts: []MergeOption{
+				Append(true),
+			},
+			Expect: "https://api.twilio.com/2010-04-01/?a=b&a=c&a=d&a=c&a=d",
+		},
+	}
+	for i, e := range tests {
+		r, err := MergeParams(e.Base, e.A, e.Opts...)
+		if e.Error != nil {
+			fmt.Println("***", err)
+			assert.Equal(t, e.Error, err)
+		} else if assert.Nil(t, err, fmt.Sprint(err)) {
+			fmt.Println("-->", r)
+			assert.Equal(t, e.Expect, r, "#%d %v + %v", i, e.Base, e.A)
+		}
+	}
+}
+
 func TestFile(t *testing.T) {
 	tests := []struct {
 		Path   string
