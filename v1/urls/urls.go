@@ -6,6 +6,47 @@ import (
 	"path"
 )
 
+// Merge the specified queury parameters into the provided URL. Parameters
+// with existing keys are added, not replaced.
+func MergeQuery(s string, p ...url.Values) (string, error) {
+	if len(p) < 1 {
+		return s, nil
+	}
+	u, err := url.Parse(s)
+	if err != nil {
+		return "", err
+	}
+	q := u.Query()
+	for _, e := range p {
+		for k, v := range e {
+			for _, x := range v {
+				q.Add(k, x)
+			}
+		}
+	}
+	u.RawQuery = q.Encode()
+	return u.String(), nil
+}
+
+// Merge the specified queury parameters into the provided URL. This version
+// accepts a set of options which control how the merge is performed. By
+// default, parameters with existing keys are replaced, not added.
+func MergeQueryOpts(s string, p url.Values, opts ...MergeOption) (string, error) {
+	if len(p) < 1 {
+		return s, nil
+	}
+	u, err := url.Parse(s)
+	if err != nil {
+		return "", err
+	}
+	q, err := MergeValues(u.Query(), p, opts...)
+	if err != nil {
+		return "", err
+	}
+	u.RawQuery = q.Encode()
+	return u.String(), nil
+}
+
 // Join a base URL together with path components, similar to the
 // functionality of path.Join.
 func Join(b string, c ...interface{}) string {
@@ -27,28 +68,6 @@ func Join(b string, c ...interface{}) string {
 		b = b + "/"
 	}
 	return b + p
-}
-
-// Merge the specified qweury parameters into the provided URL. Parameters
-// with existing keys are added, not replaced.
-func MergeQuery(s string, p ...url.Values) (string, error) {
-	if len(p) < 1 {
-		return s, nil
-	}
-	u, err := url.Parse(s)
-	if err != nil {
-		return "", err
-	}
-	q := u.Query()
-	for _, e := range p {
-		for k, v := range e {
-			for _, x := range v {
-				q.Add(k, x)
-			}
-		}
-	}
-	u.RawQuery = q.Encode()
-	return u.String(), nil
 }
 
 // Return a file URL for the provided path
