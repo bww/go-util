@@ -219,7 +219,7 @@ func TestMergeQueryOpts(t *testing.T) {
 		},
 	}
 	for i, e := range tests {
-		r, err := MergeQueryOpts(e.Base, e.A, e.Opts...)
+		r, err := MergeParams(e.Base, e.A, e.Opts...)
 		if e.Error != nil {
 			fmt.Println("***", err)
 			assert.Equal(t, e.Error, err)
