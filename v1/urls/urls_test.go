@@ -134,7 +134,7 @@ func TestMergeQuery(t *testing.T) {
 	}
 }
 
-func TestMergeQueryOpts(t *testing.T) {
+func TestMergeParams(t *testing.T) {
 	tests := []struct {
 		Base   string
 		A      url.Values
