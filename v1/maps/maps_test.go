@@ -74,11 +74,9 @@ func TestMergeMerged(t *testing.T) {
 
 	for _, e := range tests {
 		assert.Equal(t, e.Output, Merged(e.Input...))
-		Merge(e.Input...)
-		if len(e.Input) > 0 {
+		if l := len(e.Input); l > 0 {
+			Merge(e.Input[0], e.Input[1:]...)
 			assert.Equal(t, e.Output, e.Input[0])
-		} else {
-			assert.Len(t, e.Output, 0) // expect no output
 		}
 	}
 }
