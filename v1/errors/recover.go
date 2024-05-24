@@ -3,9 +3,9 @@ package errors
 type Recovery interface {
 	error
 
-	// Recoverable indicates whether the error is recoverable or not.  What
-	// exactly this means depends on the context the error occurs in and it is
-	// expeced to be defined externally from this interface.
+	// Recoverable indicates whether the error is recoverable or not. What
+	// exactly this means depends on the context in which the error occurs and is
+	// expected to be defined externally from this interface.
 	Recoverable() bool
 }
 
@@ -35,6 +35,10 @@ func NewRecoverable(err error, rec bool) Recovery {
 
 func (e recoveryError) Error() string {
 	return e.error.Error()
+}
+
+func (e recoveryError) Unwrap() error {
+	return e.error
 }
 
 func (e recoveryError) Recoverable() bool {
