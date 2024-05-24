@@ -1,5 +1,7 @@
 package errors
 
+// Recovery is implemented by errors which can describe whether or not
+// they can be recovered from.
 type Recovery interface {
 	error
 
@@ -10,7 +12,8 @@ type Recovery interface {
 }
 
 // Recoverable inspects the provided error to determine if it both implements
-// the interface Recovery and returns true from the method Recoverable.
+// the interface Recovery and returns true from the method Recoverable. If both
+// of these conditions are true, this method returns true.
 func Recoverable(err error) bool {
 	if r, ok := err.(Recovery); ok {
 		return r.Recoverable()
