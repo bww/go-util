@@ -3,10 +3,8 @@ package env
 import (
 	"os"
 	"path"
-)
 
-import (
-	"github.com/bww/go-alert"
+	alt "github.com/bww/go-alert/v1"
 )
 
 const (
@@ -131,7 +129,7 @@ func Hostname() string {
 	if !devel() {
 		name, err = awsLocalHostname()
 		if err != nil {
-			alt.Warnf("env: Could not fetch instance hostname from environment: %v", err)
+			alt.Errorf("env: Could not fetch instance hostname from environment: %v", err)
 		} else {
 			return name
 		}
@@ -139,7 +137,7 @@ func Hostname() string {
 
 	name, err = os.Hostname()
 	if err != nil {
-		alt.Warnf("Could not obtain hostname from system: %v", err)
+		alt.Errorf("Could not obtain hostname from system: %v", err)
 	} else {
 		return name
 	}
@@ -156,7 +154,7 @@ func LocalAddr() string {
 	}
 	addr, err := awsLocalIPv4()
 	if err != nil {
-		alt.Warnf("env: Could not fetch instance local IPv4 from environment: %v", err)
+		alt.Errorf("env: Could not fetch instance local IPv4 from environment: %v", err)
 		addr = defaultIP // punt
 	}
 	return addr
@@ -171,7 +169,7 @@ func PublicAddr() string {
 	}
 	addr, err := awsPublicIPv4()
 	if err != nil {
-		alt.Warnf("env: Could not fetch instance public IPv4 from environment: %v", err)
+		alt.Errorf("env: Could not fetch instance public IPv4 from environment: %v", err)
 		addr = defaultIP // punt
 	}
 	return addr
