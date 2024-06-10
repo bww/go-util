@@ -136,7 +136,7 @@ func TestParseValueList(t *testing.T) {
 		},
 	}
 	for _, e := range tests {
-		r := ParseValueList(e.Values, e.Key, e.Delim)
+		r := ParseValueList(e.Values[e.Key], e.Delim)
 		fmt.Println("-->", r)
 		assert.Equal(t, e.Expect, r)
 	}
