@@ -1,5 +1,10 @@
 package ext
 
+// Zeroer is implemented by types that can represent a non-literal zero value
+type Zeroer interface {
+	IsZero() bool
+}
+
 // Choose implements the missing ternary (?:) operator. When the provided
 // expression evalutes to true, the first result parameter is returned;
 // otherwise the second.

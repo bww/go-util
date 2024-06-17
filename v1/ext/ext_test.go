@@ -2,9 +2,18 @@ package ext
 
 import (
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
+
+func TestZeroer(t *testing.T) {
+	var when time.Time
+	var iface interface{} = when
+	z, ok := iface.(Zeroer)
+	assert.Equal(t, true, ok)
+	assert.Equal(t, true, z.IsZero())
+}
 
 func TestChoose(t *testing.T) {
 	assert.Equal(t, "Hello", Choose(true, "Hello", "Goodbye"))
