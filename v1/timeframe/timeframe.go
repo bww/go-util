@@ -16,6 +16,15 @@ var errMalformed = errors.New("Malformed")
 // A timeframe with no bounds, representing all of time
 var Forever = Timeframe{}
 
+// Timeframe ordering
+type Ordering int
+
+const (
+	Before Ordering = -1
+	Within Ordering = 0
+	After  Ordering = 1
+)
+
 // A timeframe
 type Timeframe struct {
 	Since *time.Time `json:"since" db:"since"`
@@ -131,7 +140,26 @@ func (t Timeframe) Format(layout string) string {
 	return s
 }
 
-// CompareDuration compares the duration between t.Since and t.Until with the given duration
+// Compare determines how the provided time orders relative to this timeframe;
+// either: within it, before it begins, or after it ends. If the timeframe is
+// not finite, any parameter time is within it.
+//
+// As usual, the lower bound is inclusive and the upper bound is exclusive.
+func (t Timeframe) Compare(x time.Time) Ordering {
+	if t.Until == nil && t.Since == nil {
+		return Within
+	}
+	if t.Since != nil && x.Compare(*t.Since) < 0 {
+		return Before
+	} else if t.Until != nil && x.Compare(*t.Until) >= 0 {
+		return After
+	} else {
+		return Within
+	}
+}
+
+// CompareDuration compares the duration between t.Since and t.Until with the
+// given duration
 func (t Timeframe) CompareDuration(d time.Duration) int {
 	if t.Until == nil || t.Since == nil {
 		return 1

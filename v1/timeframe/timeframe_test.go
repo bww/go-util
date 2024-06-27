@@ -56,6 +56,80 @@ func TestCompareTimeframe(t *testing.T) {
 	}
 }
 
+func TestCompareOrdering(t *testing.T) {
+	tests := []struct {
+		TF     Timeframe
+		Time   time.Time
+		Expect Ordering
+	}{
+		{
+			TF:     Timeframe{},
+			Time:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+			Expect: Within,
+		},
+
+		{
+			TF:     NewSince(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)),
+			Time:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+			Expect: Within,
+		},
+		{
+			TF:     NewSince(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)),
+			Time:   time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC),
+			Expect: Within,
+		},
+		{
+			TF:     NewSince(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)),
+			Time:   time.Date(2019, 1, 1, 0, 0, 0, 0, time.UTC),
+			Expect: Before,
+		},
+
+		{
+			TF:     NewUntil(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)),
+			Time:   time.Date(2010, 12, 31, 23, 59, 59, 999, time.UTC),
+			Expect: Within,
+		},
+		{
+			TF:     NewUntil(time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC)),
+			Time:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+			Expect: Within,
+		},
+		{
+			TF:     NewUntil(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)),
+			Time:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+			Expect: After,
+		},
+
+		{
+			TF: New(
+				time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+				time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC),
+			),
+			Time:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+			Expect: Within,
+		},
+		{
+			TF: New(
+				time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+				time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC),
+			),
+			Time:   time.Date(2019, 1, 1, 0, 0, 0, 0, time.UTC),
+			Expect: Before,
+		},
+		{
+			TF: New(
+				time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+				time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC),
+			),
+			Time:   time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC),
+			Expect: After,
+		},
+	}
+	for i, e := range tests {
+		assert.Equal(t, e.Expect, e.TF.Compare(e.Time), "#%d: %v <> %v", i, e.TF, e.Time)
+	}
+}
+
 func TestEncodeTimeframe(t *testing.T) {
 	tests := []struct {
 		TF  Timeframe
