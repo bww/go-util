@@ -1,5 +1,20 @@
 package maps
 
+// Exists determines if the specified key exists in a map. It is equivalent to
+// the pattern:
+//
+//	_, ok := m[key]
+//	if ok {
+//	// ...
+//	}
+//
+// Except that, because it does not require an assignment, it an be used
+// directly in any expression.
+func Exists[K comparable, V any](m map[K]V, k K) bool {
+	_, ok := m[k]
+	return ok
+}
+
 // Copy makes a shallow copy of a map
 func Copy[K comparable, V any](m map[K]V) map[K]V {
 	d := make(map[K]V)

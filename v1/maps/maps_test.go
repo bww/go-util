@@ -6,6 +6,29 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestExists(t *testing.T) {
+	tests := []struct {
+		Input  map[int]string
+		Key    int
+		Exists bool
+	}{
+		{
+			Input:  map[int]string{1: "One", 2: "Two"},
+			Key:    1,
+			Exists: true,
+		},
+		{
+			Input:  map[int]string{1: "One", 2: "Two"},
+			Key:    9,
+			Exists: false,
+		},
+	}
+
+	for _, e := range tests {
+		assert.Equal(t, e.Exists, Exists(e.Input, e.Key))
+	}
+}
+
 func TestCopy(t *testing.T) {
 	tests := []struct {
 		Input  map[int]string
