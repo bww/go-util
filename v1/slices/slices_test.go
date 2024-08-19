@@ -127,31 +127,22 @@ func TestFlatMap(t *testing.T) {
 	}
 }
 
-func TestSort(t *testing.T) {
+func TestFind(t *testing.T) {
 	tests := []struct {
 		Input  []int
-		Output []int
-		Cmp    Comparator[int]
+		Search int
+		Found  bool
 	}{
 		{
-			[]int{3, 2, 1},
-			[]int{1, 2, 3},
-			func(a, b int) int {
-				return a - b
-			},
-		},
-		{
-			[]int{1, 2, 3},
-			[]int{3, 2, 1},
-			func(a, b int) int { // compare inverse
-				return b - a
-			},
+			Input:  []int{1, 2, 3},
+			Search: 3,
+			Found:  true,
 		},
 	}
 
 	for _, e := range tests {
-		assert.Equal(t, e.Output, Sorted(e.Input, e.Cmp))
-		Sort(e.Input, e.Cmp) // sorts input in place
-		assert.Equal(t, e.Output, e.Input)
+		res, ok := FindFunc(e.Input, MatchValue(e.Search))
+		assert.Equal(t, e.Search, res)
+		assert.Equal(t, e.Found, ok)
 	}
 }
