@@ -51,7 +51,7 @@ func TestFirst(t *testing.T) {
 	}
 }
 
-func TestFirstDelim(t *testing.T) {
+func TestFirstConfig(t *testing.T) {
 	tests := []struct {
 		Input            string
 		First, Remainder string
@@ -88,7 +88,7 @@ func TestFirstDelim(t *testing.T) {
 		},
 	}
 	for _, test := range tests {
-		a, b := FirstDelim(test.Input, '#')
+		a, b := FirstConfig(test.Input, Config{Sep: '#', Esc: '\\'})
 		fmt.Println(">>>", test.Input, "→", a, b)
 		assert.Equal(t, test.First, a)
 		assert.Equal(t, test.Remainder, b)

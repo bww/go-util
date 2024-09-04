@@ -1,22 +1,31 @@
 package paths
 
 import (
+	"os"
 	"strings"
 )
 
-var esc = '\\'
+type Config struct {
+	Sep, Esc rune
+}
+
+// OSConfig defines a path configuration using the OS path separator
+var OSConfig = Config{
+	Sep: os.PathSeparator,
+	Esc: '\\',
+}
 
 // First separates a path at the first component, not the last. The separator
 // used for this purpose is '/' and the escape character used is '\'. To use
-// the OS path separator, use FirstDelim(path, os.PathSeparator) instead.
+// the OS path separator, use FirstDelim(path, OSConfig) instead.
 func First(path string) (string, string) {
-	return FirstDelim(path, '/')
+	return FirstConfig(path, Config{Sep: '/', Esc: '\\'})
 }
 
 // First separates a path at the first component, not the last. The separator
 // used for this purpose is the one provided and the escape character used is
 // '\'.
-func FirstDelim(path string, sep rune) (string, string) {
+func FirstConfig(path string, conf Config) (string, string) {
 	path = strings.TrimSpace(path)
 	if path == "" {
 		return "", ""
@@ -28,12 +37,12 @@ func FirstDelim(path string, sep rune) (string, string) {
 		e rune
 	)
 	for i, e = range path {
-		if x && (e == sep || e == esc) {
+		if x && (e == conf.Sep || e == conf.Esc) {
 			sb.WriteRune(e)
 			x = false
-		} else if e == esc {
+		} else if e == conf.Esc {
 			x = true
-		} else if e == sep {
+		} else if e == conf.Sep {
 			break
 		} else {
 			sb.WriteRune(e)
