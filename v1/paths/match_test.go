@@ -4,7 +4,7 @@
 
 // Mofifications by Brian W. Wolter
 
-package path
+package paths
 
 import "testing"
 

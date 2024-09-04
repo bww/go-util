@@ -4,7 +4,7 @@
 
 // Mofifications by Brian W. Wolter
 
-package path
+package paths
 
 import (
 	"errors"
@@ -18,26 +18,25 @@ var ErrBadPattern = errors.New("Invalid pattern")
 // Match reports whether name matches the shell file name pattern.
 // The pattern syntax is:
 //
-//  pattern:
-//    { term }
-//  term:
-//    '**'        matches any sequence of characters
-//    '*'         matches any sequence of non-/ characters
-//    '?'         matches any single non-/ character
-//    '[' [ '^' ] { character-range } ']'
-//                character class (must be non-empty)
-//    c           matches character c (c != '*', '?', '\\', '[')
-//    '\\' c      matches character c
+//	pattern:
+//	  { term }
+//	term:
+//	  '**'        matches any sequence of characters
+//	  '*'         matches any sequence of non-/ characters
+//	  '?'         matches any single non-/ character
+//	  '[' [ '^' ] { character-range } ']'
+//	              character class (must be non-empty)
+//	  c           matches character c (c != '*', '?', '\\', '[')
+//	  '\\' c      matches character c
 //
-//  character-range:
-//    c           matches character c (c != '\\', '-', ']')
-//    '\\' c      matches character c
-//    lo '-' hi   matches character c for lo <= c <= hi
+//	character-range:
+//	  c           matches character c (c != '\\', '-', ']')
+//	  '\\' c      matches character c
+//	  lo '-' hi   matches character c for lo <= c <= hi
 //
 // Match requires pattern to match all of name, not just a substring.
 // The only possible returned error is ErrBadPattern, when pattern
 // is malformed.
-//
 func Match(pattern, name string) (matched bool, err error) {
 Pattern:
 	for len(pattern) > 0 {
