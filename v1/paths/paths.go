@@ -1,16 +1,22 @@
 package paths
 
 import (
-	"os"
 	"strings"
 )
 
 var esc = '\\'
 
 // First separates a path at the first component, not the last. The separator
-// used for this purpose is os.PathSeparator and the escape character used is
-// '\'.
+// used for this purpose is '/' and the escape character used is '\'. To use
+// the OS path separator, use FirstDelim(path, os.PathSeparator) instead.
 func First(path string) (string, string) {
+	return FirstDelim(path, '/')
+}
+
+// First separates a path at the first component, not the last. The separator
+// used for this purpose is the one provided and the escape character used is
+// '\'.
+func FirstDelim(path string, sep rune) (string, string) {
 	path = strings.TrimSpace(path)
 	if path == "" {
 		return "", ""
@@ -22,12 +28,12 @@ func First(path string) (string, string) {
 		e rune
 	)
 	for i, e = range path {
-		if x && (e == os.PathSeparator || e == esc) {
+		if x && (e == sep || e == esc) {
 			sb.WriteRune(e)
 			x = false
 		} else if e == esc {
 			x = true
-		} else if e == os.PathSeparator {
+		} else if e == sep {
 			break
 		} else {
 			sb.WriteRune(e)
