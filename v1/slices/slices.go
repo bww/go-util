@@ -1,5 +1,10 @@
 package slices
 
+import (
+	"fmt"
+	"strings"
+)
+
 // Apply a function to every element in a slice, returning the parameter
 // slice, whose elements may be mutated.
 func Apply[T any](s []T, f func(T) T) []T {
@@ -71,4 +76,39 @@ func FindFunc[T any](s []T, match func(T) bool) (T, bool) {
 		}
 	}
 	return zero, false
+}
+
+// SummaryFunc produces a summary of a slice by producing a string list of the
+// first n elements, as defined by the limit, separated by the separator. If the
+// slice is empty, an empty string is retured. The function fmt.Sprint is used
+// to produce a string representation of the slice elements.
+func Summary[T any](s []T, esep, fsep string, limit int) string {
+	return SummaryFunc(s, esep, fsep, limit, func(t T) string { return fmt.Sprint(t) })
+}
+
+// SummaryFunc produces a summary of a slice by producing a string list of the
+// first n elements, as defined by the limit, separated by the separator. If the
+// slice is empty, an empty string is retured. The provided function is used to
+// produce a string representation of the slice elements.
+func SummaryFunc[T any](s []T, esep, fsep string, limit int, f func(T) string) string {
+	l := len(s)
+	if l == 0 {
+		return ""
+	}
+	var r int
+	if limit > 0 && l > limit {
+		s, r = s[:limit], l-limit
+	}
+	sb := &strings.Builder{}
+	for i, e := range s {
+		if i > 0 {
+			sb.WriteString(esep)
+		}
+		sb.WriteString(f(e))
+	}
+	if r > 0 {
+		sb.WriteString(fsep)
+		sb.WriteString(fmt.Sprintf("%d more", r))
+	}
+	return sb.String()
 }

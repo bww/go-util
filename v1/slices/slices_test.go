@@ -146,3 +146,52 @@ func TestFind(t *testing.T) {
 		assert.Equal(t, e.Found, ok)
 	}
 }
+
+func TestSummary(t *testing.T) {
+	tests := []struct {
+		Input  []int
+		Limit  int
+		Sep    string
+		Expect string
+	}{
+		{
+			Input:  []int{},
+			Limit:  0,
+			Sep:    ",",
+			Expect: "",
+		},
+		{
+			Input:  []int{},
+			Limit:  3,
+			Sep:    ",",
+			Expect: "",
+		},
+		{
+			Input:  []int{1, 2, 3},
+			Limit:  3,
+			Sep:    ",",
+			Expect: "1,2,3",
+		},
+		{
+			Input:  []int{1, 2, 3},
+			Limit:  2,
+			Sep:    ",",
+			Expect: "1,2...1 more",
+		},
+		{
+			Input:  []int{1, 2, 3},
+			Limit:  1,
+			Sep:    ",",
+			Expect: "1...2 more",
+		},
+		{
+			Input:  []int{1, 2, 3},
+			Limit:  0,
+			Sep:    ",",
+			Expect: "1,2,3",
+		},
+	}
+	for i, test := range tests {
+		assert.Equal(t, test.Expect, Summary(test.Input, test.Sep, "...", test.Limit), "#%d", i)
+	}
+}
