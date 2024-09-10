@@ -1,6 +1,7 @@
 package errors
 
 import (
+	"errors"
 	"fmt"
 )
 
@@ -23,7 +24,8 @@ type Redacted interface {
 // interface Redacted. If so, the result of err.Unredact() is returned; and if
 // not, the input error itself is returned.
 func Unredact(err error) error {
-	if r, ok := err.(Redacted); ok {
+	var r Redacted
+	if errors.As(err, &r) {
 		return r.Unredact()
 	} else {
 		return err
@@ -51,7 +53,11 @@ func Redact(internal error, public error) Redacted {
 }
 
 func (e redactedError) Error() string {
-	return e.public.Error()
+	if e.internal != nil {
+		return fmt.Sprintf("%s (additional details redacted)", e.public.Error())
+	} else {
+		return e.public.Error()
+	}
 }
 
 func (e redactedError) Unwrap() error {

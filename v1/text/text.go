@@ -4,9 +4,7 @@ import (
 	"strings"
 	"unicode"
 	"unicode/utf8"
-)
 
-import (
 	"golang.org/x/text/transform"
 	"golang.org/x/text/unicode/norm"
 )
