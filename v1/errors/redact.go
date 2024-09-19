@@ -67,3 +67,14 @@ func (e redactedError) Unwrap() error {
 func (e redactedError) Unredact() error {
 	return e.internal
 }
+
+func (e redactedError) Reference() string {
+	var referr Referenced
+	if errors.As(e.public, &referr) {
+		return referr.Reference()
+	} else if errors.As(e.internal, &referr) {
+		return referr.Reference()
+	} else {
+		return ""
+	}
+}
