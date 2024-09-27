@@ -47,9 +47,13 @@ func (e referencedError) Unwrap() error {
 }
 
 func (e referencedError) Error() string {
-	return fmt.Sprintf("%v (ref: %s)", e.err, e.ref)
+	return e.err.Error() // Error() does not include the reference
 }
 
 func (e referencedError) Reference() string {
 	return e.ref
+}
+
+func (e referencedError) String() string {
+	return fmt.Sprintf("%v (ref: %s)", e.err, e.ref) // String() does bake in the reference
 }
