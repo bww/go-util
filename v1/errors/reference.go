@@ -21,24 +21,32 @@ type referencedError struct {
 }
 
 // Reference generates a random reference identifier and wraps the provided
-// error in a new referenced error with that identifier.
+// error in a new referenced error with that identifier. If the parameter
+// error is already a Referenced, it is simply returned unmodified.
 func Reference(err error) Referenced {
-	return referencedError{
-		err: err,
-		ref: fmt.Sprintf("err-%v", uuid.New()),
+	var referr Referenced
+	if errors.As(err, &referr) {
+		return referr
+	} else {
+		return referencedError{
+			err: err,
+			ref: fmt.Sprintf("err-%v", uuid.New()),
+		}
 	}
 }
 
-// Unreference inspects the provided error to determine if it implements the
-// interface Referenced. If so, the result of err.Unwrap() is returned along
-// with the reference identifier; and if not, the input error itself is returned
-// with an empty string as the identifier.
-func Unreference(err error) (error, string) {
+// Refstr inspects the provided error to determine if any error in its chain
+// implements the interface Referenced. If so, the reference string from the first
+// Referenced error encountered is returned.
+//
+// If you just want the first error in the chain the implements Refererenced,
+// use [errors.As] instead.
+func Refstr(err error) string {
 	var r Referenced
 	if errors.As(err, &r) {
-		return r.Unwrap(), r.Reference()
+		return r.Reference()
 	} else {
-		return err, ""
+		return ""
 	}
 }
 
