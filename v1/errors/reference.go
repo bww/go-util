@@ -22,16 +22,16 @@ type referencedError struct {
 
 // Reference generates a random reference identifier and wraps the provided
 // error in a new referenced error with that identifier. If the parameter
-// error is already a Referenced, it is simply returned unmodified.
+// error is already a [Referenced] itself, it is simply returned unmodified.
+// The chain is not searched if the parameter does not direclty implement
+// [Referenced].
 func Reference(err error) Referenced {
-	var referr Referenced
-	if errors.As(err, &referr) {
+	if referr, ok := err.(Referenced); ok {
 		return referr
-	} else {
-		return referencedError{
-			err: err,
-			ref: fmt.Sprintf("err-%v", uuid.New()),
-		}
+	}
+	return referencedError{
+		err: err,
+		ref: fmt.Sprintf("err-%v", uuid.New()),
 	}
 }
 
