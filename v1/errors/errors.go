@@ -63,6 +63,12 @@ func NewSet(e ...error) error {
 	}
 }
 
+// Set unwraps to itself, the slice of errors that it represents. This case is
+// unusual, but it is handled by [errors.Unwrap] and friends.
+func (e Set) Unwrap() []error {
+	return []error(e)
+}
+
 // Conform to error. This method simply concatenates the result of Error()
 // for all the elements of the set and returns the result.
 func (e Set) Error() string {
@@ -74,14 +80,4 @@ func (e Set) Error() string {
 		s += v.Error()
 	}
 	return s
-}
-
-// Support error unwrapping. For an error set this simply returns the first
-// error in the set, if any, as the unwrapped value.
-func (e Set) Unwrap() error {
-	if len(e) > 0 {
-		return e[0]
-	} else {
-		return nil
-	}
 }
