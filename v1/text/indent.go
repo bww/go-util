@@ -3,6 +3,7 @@ package text
 import (
 	"bytes"
 	"io"
+	"unicode/utf8"
 )
 
 // Indentiation options
@@ -63,13 +64,15 @@ func indent(s, p string, opt IndentOptions, dst io.Writer) (int, error) {
 		}
 		n += x
 	}
-	for i := 0; i < len(s); i++ {
-		x, err := io.WriteString(dst, string(s[i]))
+	rbuf := make([]byte, 6)
+	for _, c := range s {
+		z := utf8.EncodeRune(rbuf, c)
+		x, err := dst.Write(rbuf[:z])
 		if err != nil {
 			return n, err
 		}
 		n += x
-		if s[i] == '\n' {
+		if c == '\n' {
 			x, err = io.WriteString(dst, p)
 			if err != nil {
 				return n, err
