@@ -11,9 +11,9 @@ require (
 )
 
 require (
-	github.com/bww/go-ident v0.1.0 // indirect
+	github.com/bww/go-ident v0.2.0 // indirect
 	github.com/bww/go-router v1.9.0 // indirect
-	github.com/bww/go-xid v0.1.1 // indirect
+	github.com/bww/go-xid v0.2.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/getsentry/sentry-go v0.28.0 // indirect
 	github.com/lib/pq v1.10.9 // indirect
