@@ -32,3 +32,16 @@ func Coalesce[T comparable](v ...T) T {
 	}
 	return z
 }
+
+// Nonzero returns the first argument that is not cosidered "zero" by the
+// Zeroer interface. If all the values are zero, the zero value for the type
+// is returned.
+func Nonzero[T Zeroer](v ...T) T {
+	var zero T
+	for _, e := range v {
+		if !e.IsZero() {
+			return e
+		}
+	}
+	return zero
+}

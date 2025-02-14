@@ -28,3 +28,13 @@ func TestCoalesce(t *testing.T) {
 	assert.Equal(t, "hello", Coalesce("", "hello", ""))
 	assert.Equal(t, &i, Coalesce(nil, &i, nil))
 }
+
+func TestNonzero(t *testing.T) {
+	var (
+		zero    time.Time
+		nonzero = time.Now()
+	)
+	assert.Equal(t, nonzero, Nonzero(zero, nonzero))
+	assert.Equal(t, nonzero, Nonzero(nonzero, zero))
+	assert.Equal(t, nonzero, Nonzero(zero, zero, nonzero, zero))
+}
