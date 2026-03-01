@@ -54,30 +54,31 @@ func (w *indentWriter) Write(s []byte) (int, error) {
 	return indent(string(s), w.prefix, opt, w.dst)
 }
 
-// Indent a string by prefixing each line with the provided string
-func indent(s, p string, opt IndentOptions, dst io.Writer) (int, error) {
-	var n int
+// Indent a string by prefixing each line with the provided string. We don't
+// include the prefix bytes in the bytes-written count that we return; some
+// callers will interpret the discrepancy between bytes-provided and
+// bytes-written as an error.
+func indent(s, p string, opt IndentOptions, dst io.Writer) (n int, err error) {
+	var x int
 	if (opt & IndentOptionIndentFirstLine) == IndentOptionIndentFirstLine {
-		x, err := io.WriteString(dst, p)
+		_, err = io.WriteString(dst, p)
 		if err != nil {
 			return n, err
 		}
-		n += x
 	}
 	rbuf := make([]byte, 6)
 	for _, c := range s {
 		z := utf8.EncodeRune(rbuf, c)
-		x, err := dst.Write(rbuf[:z])
+		x, err = dst.Write(rbuf[:z])
 		if err != nil {
 			return n, err
 		}
 		n += x
 		if c == '\n' {
-			x, err = io.WriteString(dst, p)
+			_, err = io.WriteString(dst, p)
 			if err != nil {
 				return n, err
 			}
-			n += x
 		}
 	}
 	return n, nil
